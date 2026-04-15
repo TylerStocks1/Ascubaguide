@@ -13,9 +13,17 @@ import { SITE_URL } from "@/lib/business";
  * and marked noindex in their own metadata so search engines don't
  * index placeholder content.
  *
+ * `runtime = 'edge'` is required by @cloudflare/next-on-pages: the
+ * adapter refuses to ship a Pages bundle if any non-static route
+ * handler is missing it. The sitemap is still static-generated at
+ * build time; the runtime setting only applies when the route is
+ * actually served.
+ *
  * Note: `priority` and `changeFrequency` are deliberately omitted —
  * both Google and Bing ignore them.
  */
+export const runtime = "edge";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 

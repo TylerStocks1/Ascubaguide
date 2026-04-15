@@ -5,7 +5,14 @@ import { SITE_URL } from "@/lib/business";
  * robots.txt — open to every crawler that matters, with explicit rules
  * allowing AI search crawlers. Per the Stocks Local skill spec, GEO is the
  * differentiator: do NOT block GPTBot, ClaudeBot, PerplexityBot, etc.
+ *
+ * `runtime = 'edge'` is required by @cloudflare/next-on-pages — the
+ * adapter refuses to ship a Pages bundle if any non-static route is
+ * missing it. The function still runs at build time for the static
+ * generation path; the runtime export only kicks in when serving.
  */
+export const runtime = "edge";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
