@@ -26,18 +26,19 @@ import Link from "next/link";
  *      pinned at `top: 0; height: 100vh`. The sticky child stays in
  *      the viewport from scrollY 0 → 2vp while the animation plays
  *      through; from scrollY 2vp → 3vp the sticky unsticks and the
- *      hero scrolls up and off the top of the viewport normally. A
- *      gradient-bridge div sits IMMEDIATELY AFTER the outer container
- *      so that as the hero scrolls away, the first thing that enters
- *      from below is a deep-ocean-blue → page-background gradient —
- *      Tyler's ask: make the ocean from the last frame feel like it
- *      blurs into the page.
+ *      hero scrolls up and off the top of the viewport normally.
+ *      A simple bottom-of-hero gradient fades the last 300px of the
+ *      hero into neutral-950 (the page background colour), so when
+ *      the hero scrolls away the dark bottom of the video seamlessly
+ *      meets the dark page below — no hard cut, no dedicated bridge
+ *      section. Tyler's ask: `absolute bottom-0 h-[300px] transparent
+ *      → black`, exactly like the reference.
  *
  *      Math: viewport = vp.
  *        - scrollY    0    →    animation progress 0
  *        - scrollY   2vp   →    animation progress 1 (last frame)
- *        - scrollY 2vp-3vp →    hero sticky unsticks, scrolls up and off
- *        - scrollY   3vp+  →    gradient bridge then page content
+ *        - scrollY 2vp-3vp →    hero scrolls up and off
+ *        - scrollY   3vp+  →    dark page content on bg-neutral-950
  *
  *   4. Text chapters have the same progress-range system as before —
  *      each chapter visible for part of the [0, 1] range with gaps
@@ -309,10 +310,21 @@ export function HeroScrollVideo() {
           />
         )}
 
-        {/* Readability dim */}
+        {/* Readability dim — subtle top-to-bottom darken so the white
+            headline type stays legible against bright underwater frames. */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/65"
+          className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/40"
+        />
+
+        {/* Bottom fade — 300px of transparent → neutral-950 at the very
+            bottom of the hero. Matches the `bg-neutral-950` page below
+            exactly, so when the sticky hero scrolls up the fade merges
+            into the page content with no visible seam. This replaced
+            the old 70vh gradient-bridge div (too long, wrong palette). */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[300px] bg-gradient-to-b from-transparent to-neutral-950"
         />
 
         <HeroNav />
@@ -371,33 +383,6 @@ export function HeroScrollVideo() {
         </div>
       </section>
       </div>
-
-      {/*
-        Ocean → page gradient bridge.
-
-        As the sticky hero scrolls up and off the top of the viewport
-        (around scrollY 2vp → 3vp), this gradient div is the next
-        thing the user sees entering from the bottom. It starts at
-        the deep ocean-blue that dominates the last frame of the
-        hero video and fades to the page background (warm off-white),
-        making the underwater color feel like it's dissolving INTO
-        the page — Tyler's ask: "so it looks like the ocean from
-        the last frame of the video is bluring into the page".
-
-        Height 70vh so the gradient has room to breathe. Under
-        reduced-motion we skip it — the static first-frame img above
-        is hero enough without a theatrical transition.
-      */}
-      {!reducedMotion && (
-        <div
-          aria-hidden
-          className="h-[70vh] w-full"
-          style={{
-            backgroundImage:
-              "linear-gradient(to bottom, #06141f 0%, #0a2436 18%, #1a3a4a 38%, #5a7888 62%, #c8c4b8 84%, #ffffff 100%)",
-          }}
-        />
-      )}
     </>
   );
 }

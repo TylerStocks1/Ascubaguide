@@ -1,220 +1,630 @@
 import type { Metadata } from "next";
+import type { ReactNode, SVGProps } from "react";
 import Link from "next/link";
 import { BUSINESS, OWNER } from "@/lib/business";
 import { DIVE_SITE_COUNT } from "@/lib/dive-sites";
 import { FISH_COUNT } from "@/lib/fish";
-import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 import { HeroScrollVideo } from "@/components/marketing/HeroScrollVideo";
 
+/**
+ * Homepage — dark editorial theme on top of the scroll-scrub hero.
+ *
+ * Structure roughly matches the dark SaaS reference Tyler shared
+ * (Cyclops influencer-AI landing page): hero → trusted-by → feature
+ * cards → data-moat stats card → pricing card → bottom stats → footer.
+ * Adapted for the A Scuba Guide content set with our underwater dark
+ * theme + Archivo 900 display face.
+ *
+ * The <main> is scoped `bg-neutral-950 text-white` so the dark theme
+ * lives only on the homepage. Interior pages still render light on
+ * their own body bg — the shared Footer in app/layout.tsx sits on
+ * whatever the body colour is, which means it'll be on bg-white
+ * beneath the dark homepage until we dark-theme the interior pages.
+ * Flagged as a known gap.
+ */
+
 export const metadata: Metadata = {
-  // Use `absolute` to bypass the layout's "%s | A Scuba Guide" template —
-  // the home page owns its full title and positions the brand last itself.
   title: {
     absolute: `${BUSINESS.name} — Dive Briefing App for Koh Tao Schools`,
   },
   description:
-    "Replace whiteboards and flip charts with a visual briefing tool covering 24 Koh Tao dive sites and 100+ species. See it in action.",
+    "Replace whiteboards and flip charts with a visual briefing tool covering 28 Koh Tao dive sites and 91+ species. Built by a RAID instructor with 2,000+ dives. Free during early access.",
   alternates: { canonical: "/" },
 };
 
-const FAQS: FaqItem[] = [
-  {
-    question: "What is A Scuba Guide?",
-    answer:
-      "A Scuba Guide is a free dive briefing tool for RAID, PADI, and SSI dive schools. It replaces whiteboards, flip charts and printed cue cards with a tappable map of every dive site and the marine life your students will see. Built by a working RAID instructor with 2,000+ logged dives.",
-  },
-  {
-    question: "Which cert bodies does it support?",
-    answer:
-      "All of them. The tool is cert-agnostic — every dive site and species page works the same whether you teach RAID, PADI, SSI, or any other recreational standard. There is no PADI-only or RAID-only mode.",
-  },
-  {
-    question: "How much does it cost?",
-    answer:
-      "Free during early access for every dive school on Koh Tao. No credit card, no per-student fees, no hidden tier. Apply for the pilot from the pricing page and we'll get you set up.",
-  },
-  {
-    question: "Do students need to download an app?",
-    answer:
-      "No. A Scuba Guide is a Progressive Web App — it loads in any phone browser and can be added to the home screen with one tap. There is no App Store or Play Store install. It works offline once loaded, so it runs on the boat with no signal.",
-  },
-  {
-    question: "Where is it available?",
-    answer:
-      "Koh Tao, Thailand is the first city. The product is built so that future locations like Phuket and the Similan Islands can be added without re-branding. If you run a school in another location and want it next, get in touch.",
-  },
-];
+/** Warm sunset-red accent. Not #f97316 (banned PWA coral),
+ *  not #ff5e00 (studiohazey). Sparingly used for the primary CTA
+ *  and one or two accent glyphs — overusing it kills the effect. */
+const ACCENT = "#c44d37";
 
 export default function HomePage() {
   return (
-    <main>
-      <FaqSchema faqs={FAQS} />
-
-      {/* Hero: 300vh outer with a sticky h-screen section inside, then
-          a gradient bridge that fades the underwater deep-blue into the
-          page background. After the gradient, normal document content. */}
+    <main className="bg-neutral-950 text-white">
       <HeroScrollVideo />
-
-      <div className="mx-auto max-w-4xl px-4 py-12">
-        <section aria-labelledby="hero-subhead" className="space-y-6">
-          <h2
-            id="hero-subhead"
-            className="text-3xl font-bold tracking-tight sm:text-4xl"
-          >
-            The dive briefing tool built by an instructor with{" "}
-            {OWNER.diveCount.toLocaleString()}+ dives
-          </h2>
-          <p className="text-lg text-neutral-700">
-            {BUSINESS.name} replaces the whiteboard, the flip chart and the
-            printed species sheet with one tappable map of every Koh Tao dive
-            site and every fish your students will meet underwater. Free
-            during early access for every Koh Tao dive school.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/for-dive-schools"
-              className="rounded-md border border-neutral-900 px-4 py-2 font-medium"
-            >
-              For dive schools &rarr;
-            </Link>
-            <Link
-              href="/koh-tao"
-              className="rounded-md border border-neutral-300 px-4 py-2 font-medium"
-            >
-              Open the app
-            </Link>
-          </div>
-        </section>
-
-        <section aria-labelledby="what" className="mt-16 space-y-4">
-        <h2 id="what" className="text-2xl font-semibold">
-          What it actually does
-        </h2>
-        <p>
-          A working instructor opens the tool on a boat or in a classroom, taps a
-          dive site, and walks students through depth, difficulty, the dive
-          profile, and the exact species they should expect. Every dive site is
-          linked to its species. Every species links back to the dive sites where
-          you can find it. Briefings stop being a whiteboard sketch and start
-          being a visual story.
-        </p>
-        <p>
-          {DIVE_SITE_COUNT} dive sites. {FISH_COUNT}+ species. Every record
-          cross-linked. No login. No ads. No upsell.
-        </p>
-      </section>
-
-      <section aria-labelledby="who" className="mt-16 space-y-4">
-        <h2 id="who" className="text-2xl font-semibold">
-          Built by an instructor, not a startup
-        </h2>
-        <p>
-          {OWNER.firstName} is a RAID instructor based on Koh Tao with{" "}
-          {OWNER.diveCount.toLocaleString()}+ logged dives. He built {BUSINESS.name}{" "}
-          because he was sick of briefing students with the same hand-drawn
-          whiteboard maps every morning. The tool is the tool he wishes he had as
-          a new instructor — and the one he uses on his own students today.{" "}
-          <Link href="/about">More about {OWNER.firstName} &rarr;</Link>
-        </p>
-      </section>
-
-      <section aria-labelledby="schools" className="mt-16 space-y-4">
-        <h2 id="schools" className="text-2xl font-semibold">
-          Why dive schools use it
-        </h2>
-        <ul className="list-disc space-y-2 pl-6">
-          <li>
-            Every instructor briefs from the same canonical site notes. New hires
-            stop ad-libbing.
-          </li>
-          <li>
-            Students see what they are about to dive — depth, profile, species —
-            before they kit up. Better-prepped divers, fewer in-water surprises.
-          </li>
-          <li>
-            Works on any phone. No App Store. No accounts. No setup beyond
-            opening a URL.
-          </li>
-          <li>
-            Cert-agnostic content. Every page works the same for RAID, PADI and
-            SSI students.
-          </li>
-        </ul>
-        <p>
-          <Link href="/for-dive-schools">See the full school pitch &rarr;</Link>
-        </p>
-      </section>
-
-      <section aria-labelledby="divers" className="mt-16 space-y-4">
-        <h2 id="divers" className="text-2xl font-semibold">
-          Why divers install it
-        </h2>
-        <p>
-          If you&apos;re booking a trip to Koh Tao, you can read every dive site and
-          every species you might encounter before you arrive. Tap a site, see
-          the highlights, study the species list. Then add the app to your home
-          screen for offline use on the boat.
-        </p>
-        <p>
-          <Link href="/for-divers">For divers &rarr;</Link> &middot;{" "}
-          <Link href="/install">Install instructions</Link>
-        </p>
-      </section>
-
-      <section aria-labelledby="explore" className="mt-16 space-y-4">
-        <h2 id="explore" className="text-2xl font-semibold">
-          Explore the data
-        </h2>
-        <p>
-          Every Koh Tao dive site and every recorded species is on the public
-          site already &mdash; no install needed.
-        </p>
-        <ul className="list-disc space-y-1 pl-6">
-          <li>
-            <Link href="/dive-sites">All {DIVE_SITE_COUNT} Koh Tao dive sites &rarr;</Link>
-          </li>
-          <li>
-            <Link href="/fish">All {FISH_COUNT}+ Koh Tao species &rarr;</Link>
-          </li>
-        </ul>
-      </section>
-
-      <section aria-labelledby="faq" className="mt-16 space-y-4">
-        <h2 id="faq" className="text-2xl font-semibold">
-          Frequently asked questions
-        </h2>
-        <dl className="space-y-6">
-          {FAQS.map((f) => (
-            <div key={f.question}>
-              <dt className="font-semibold">{f.question}</dt>
-              <dd className="mt-1 text-neutral-700">{f.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-16 rounded-lg border border-neutral-200 p-6">
-        <h2 className="text-2xl font-semibold">Run a Koh Tao dive school?</h2>
-        <p className="mt-2 text-neutral-700">
-          Apply for the free early-access pilot. {OWNER.firstName} replies
-          personally, usually within a day.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/contact"
-            className="rounded-md border border-neutral-900 px-4 py-2 font-medium"
-          >
-            Apply for the pilot
-          </Link>
-          <a
-            href={`mailto:${BUSINESS.email}`}
-            className="rounded-md border border-neutral-300 px-4 py-2 font-medium"
-          >
-            Email {OWNER.firstName}
-          </a>
-        </div>
-      </section>
-      </div>
+      <TrustedBySection />
+      <WhatWeOfferSection />
+      <UsefulStatisticSection />
+      <PricingSection />
+      <BottomStatsSection />
     </main>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Shared primitives                                                  */
+/* ------------------------------------------------------------------ */
+
+/** Small top-of-section label. Editorial moment: small uppercase tag,
+ *  thin hairline rule, works on dark only. */
+function SectionEyebrow({ children }: { children: ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-4 text-[11px] uppercase tracking-[0.25em] text-white/50">
+      <span aria-hidden className="block h-px w-10 bg-white/30" />
+      <span className="font-medium">{children}</span>
+    </div>
+  );
+}
+
+function PrimaryCta({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white no-underline transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_10px_40px_rgba(196,77,55,0.35)]"
+      style={{ backgroundColor: ACCENT }}
+    >
+      <span>{children}</span>
+      <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
+function SecondaryCta({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.03] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white no-underline transition-colors duration-200 hover:bg-white/[0.08]"
+    >
+      <span>{children}</span>
+      <ArrowRightIcon className="h-4 w-4" />
+    </Link>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Trusted by                                                         */
+/*                                                                     */
+/*  Editorial "built for" row — matches the "Trusted By" band in the   */
+/*  reference, but we don't have real dive-school logos yet (blocked   */
+/*  on Hydronauts endorsement confirmation + pilot schools list in    */
+/*  BLOCKERS.md), so we fall back to the three cert-body wordmarks.   */
+/* ------------------------------------------------------------------ */
+
+function TrustedBySection() {
+  return (
+    <section className="border-b border-white/5">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 py-20 text-center sm:py-24">
+        <p className="text-[11px] uppercase tracking-[0.3em] text-white/40">
+          Built for dive schools teaching
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-6">
+          <span className="text-3xl font-black tracking-tight text-white/85 sm:text-4xl">
+            RAID
+          </span>
+          <span aria-hidden className="h-6 w-px bg-white/10 sm:h-8" />
+          <span className="text-3xl font-black tracking-tight text-white/85 sm:text-4xl">
+            PADI
+          </span>
+          <span aria-hidden className="h-6 w-px bg-white/10 sm:h-8" />
+          <span className="text-3xl font-black tracking-tight text-white/85 sm:text-4xl">
+            SSI
+          </span>
+          <span aria-hidden className="hidden h-6 w-px bg-white/10 sm:block sm:h-8" />
+          <span className="text-sm uppercase tracking-[0.2em] text-white/40">
+            &amp; every instructor on Koh Tao
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  What we offer — 3 feature cards                                    */
+/* ------------------------------------------------------------------ */
+
+function WhatWeOfferSection() {
+  return (
+    <section className="relative mx-auto max-w-6xl px-6 py-28 md:py-36">
+      <div className="mb-16 flex flex-col items-start gap-6 md:mb-20">
+        <SectionEyebrow>What we offer</SectionEyebrow>
+        <h2
+          className="max-w-3xl text-white"
+          style={{
+            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            fontWeight: 900,
+          }}
+        >
+          A briefing tool, not a whiteboard.
+        </h2>
+        <p className="max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+          {DIVE_SITE_COUNT} Koh Tao dive sites and {FISH_COUNT}+ marine species,
+          written by a working RAID instructor and cross-linked so every
+          briefing reads from the same canonical notes.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <FeatureCard
+          icon={<BoltIcon />}
+          title="Brief in 2 minutes"
+          body="Whiteboard briefings eat fifteen. Tap the dive site, see depth, difficulty, species, hazards. Done. Save an hour of student attention every morning."
+        />
+        <FeatureCard
+          icon={<LayersIcon />}
+          title="Every site. Every species."
+          body={`${DIVE_SITE_COUNT} Koh Tao dive sites and ${FISH_COUNT}+ fish entries, each cross-linked to its complementary set. No other dive briefing tool has the data model.`}
+        />
+        <FeatureCard
+          icon={<SignalIcon />}
+          title="Works on the boat"
+          body="Load once, brief anywhere. Day boats don't have signal — that's fine. The tool caches locally and runs offline for the entire dive trip."
+        />
+      </div>
+    </section>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  body,
+}: {
+  icon: ReactNode;
+  title: string;
+  body: string;
+}) {
+  return (
+    <article className="group relative flex flex-col gap-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.04]">
+      <div
+        className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 text-white"
+        style={{ backgroundColor: `${ACCENT}22` }}
+      >
+        <span style={{ color: ACCENT }}>{icon}</span>
+      </div>
+      <h3
+        className="text-2xl text-white"
+        style={{ fontWeight: 900, letterSpacing: "-0.01em", lineHeight: 1.05 }}
+      >
+        {title}
+      </h3>
+      <p className="text-sm leading-relaxed text-white/60">{body}</p>
+    </article>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Useful statistic — big data-moat card                              */
+/*                                                                     */
+/*  Matches the "View Useful Statistic" card in the reference but      */
+/*  instead of a fake dashboard preview we show the actual SEO moat:   */
+/*  28 × 91+ as giant sculptural typography with the cross-linking     */
+/*  spelled out beneath.                                               */
+/* ------------------------------------------------------------------ */
+
+function UsefulStatisticSection() {
+  return (
+    <section className="relative mx-auto max-w-6xl px-6 py-28 md:py-36">
+      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-10 md:p-16">
+        {/* Subtle radial glow top-right — ties the card to the warm
+            accent used elsewhere without flooding it */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full opacity-[0.12]"
+          style={{
+            background: `radial-gradient(circle, ${ACCENT} 0%, transparent 60%)`,
+          }}
+        />
+
+        <div className="relative flex flex-col gap-12 md:flex-row md:items-center md:gap-20">
+          {/* Left: copy */}
+          <div className="flex-1 flex flex-col items-start gap-6">
+            <SectionEyebrow>The data moat</SectionEyebrow>
+            <h2
+              className="max-w-lg text-white"
+              style={{
+                fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                lineHeight: 0.98,
+                letterSpacing: "-0.02em",
+                fontWeight: 900,
+              }}
+            >
+              Every site cross-linked to every species.
+            </h2>
+            <p className="max-w-md text-sm leading-relaxed text-white/55 md:text-base">
+              Tap a dive site, see its fish. Tap a fish, see where it lives.
+              The only Koh Tao briefing tool with a bi-directional data model.
+            </p>
+            <div className="pt-2">
+              <SecondaryCta href="/dive-sites">Explore the data</SecondaryCta>
+            </div>
+          </div>
+
+          {/* Right: the sculptural number */}
+          <div className="flex flex-1 items-baseline justify-center gap-5">
+            <div className="flex flex-col items-end">
+              <span
+                className="text-white"
+                style={{
+                  fontSize: "clamp(4.5rem, 11vw, 9rem)",
+                  fontWeight: 900,
+                  lineHeight: 0.85,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                {DIVE_SITE_COUNT}
+              </span>
+              <span className="mt-2 text-[10px] uppercase tracking-[0.25em] text-white/40">
+                Dive sites
+              </span>
+            </div>
+            <span
+              aria-hidden
+              className="self-center text-4xl font-light text-white/30 md:text-6xl"
+              style={{ transform: "translateY(-0.3em)" }}
+            >
+              ×
+            </span>
+            <div className="flex flex-col items-start">
+              <span
+                className="flex items-baseline"
+                style={{
+                  fontSize: "clamp(4.5rem, 11vw, 9rem)",
+                  fontWeight: 900,
+                  lineHeight: 0.85,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                <span className="text-white">{FISH_COUNT}</span>
+                <span style={{ color: ACCENT }}>+</span>
+              </span>
+              <span className="mt-2 text-[10px] uppercase tracking-[0.25em] text-white/40">
+                Species
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Pricing — free during early access                                 */
+/*                                                                     */
+/*  The reference has two pricing cards side-by-side. We only have     */
+/*  one tier until post-pilot pricing is decided (see BLOCKERS.md),    */
+/*  so we show the free card prominently and a "Custom / Post-launch"  */
+/*  placeholder card next to it so the section still reads as "two    */
+/*  options".                                                          */
+/* ------------------------------------------------------------------ */
+
+function PricingSection() {
+  return (
+    <section className="relative mx-auto max-w-6xl px-6 py-28 md:py-36">
+      <div className="mb-16 flex flex-col items-center gap-6 text-center md:mb-20">
+        <SectionEyebrow>Friendly pricing</SectionEyebrow>
+        <h2
+          className="max-w-2xl text-white"
+          style={{
+            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            fontWeight: 900,
+          }}
+        >
+          Free for every Koh Tao dive school.
+        </h2>
+        <p className="max-w-xl text-base leading-relaxed text-white/55">
+          No credit card, no per-seat fee, no hidden tier. Pilots will be
+          grandfathered on terms when general availability pricing launches.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <PricingCard
+          label="Early access"
+          price="$0"
+          cadence="Free during pilot"
+          description="Everything A Scuba Guide does, free for Koh Tao RAID, PADI and SSI dive schools during the early-access pilot."
+          features={[
+            "Every Koh Tao dive site",
+            "Every recorded species, cross-linked",
+            "Unlimited instructors",
+            "Unlimited students",
+            "Works offline on the boat",
+            `Direct line to ${OWNER.firstName}`,
+          ]}
+          ctaHref="/contact"
+          ctaLabel="Apply for the pilot"
+          emphasised
+        />
+        <PricingCard
+          label="Post-pilot"
+          price="TBD"
+          cadence="After general availability"
+          description="Pricing tiers are being shaped by real pilot usage. Apply for the pilot to get grandfathered pricing when GA launches."
+          features={[
+            "Pilot terms grandfathered",
+            "Priority site-note updates",
+            "Multi-shop dashboard",
+            "Custom content requests",
+            "Early access to new cities",
+            "Same tool, same data",
+          ]}
+          ctaHref="/pricing"
+          ctaLabel="Learn more"
+        />
+      </div>
+    </section>
+  );
+}
+
+function PricingCard({
+  label,
+  price,
+  cadence,
+  description,
+  features,
+  ctaHref,
+  ctaLabel,
+  emphasised = false,
+}: {
+  label: string;
+  price: string;
+  cadence: string;
+  description: string;
+  features: string[];
+  ctaHref: string;
+  ctaLabel: string;
+  emphasised?: boolean;
+}) {
+  return (
+    <article
+      className={`relative overflow-hidden rounded-[32px] border p-10 md:p-12 ${
+        emphasised
+          ? "border-white/20 bg-gradient-to-b from-white/[0.06] to-white/[0.02]"
+          : "border-white/10 bg-white/[0.02]"
+      }`}
+    >
+      {emphasised && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px"
+          style={{
+            background: `linear-gradient(to right, transparent 0%, ${ACCENT} 50%, transparent 100%)`,
+          }}
+        />
+      )}
+
+      <div className="flex items-center justify-between">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-white/50">
+          {label}
+        </p>
+        {emphasised && (
+          <span
+            className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white"
+            style={{ backgroundColor: `${ACCENT}33`, color: ACCENT }}
+          >
+            Pilot
+          </span>
+        )}
+      </div>
+
+      <div className="mt-8 flex items-baseline gap-3">
+        <span
+          className="text-white"
+          style={{
+            fontSize: "clamp(3.5rem, 8vw, 6rem)",
+            fontWeight: 900,
+            lineHeight: 0.9,
+            letterSpacing: "-0.025em",
+          }}
+        >
+          {price}
+        </span>
+        <span className="text-sm text-white/40">{cadence}</span>
+      </div>
+
+      <p className="mt-6 text-sm leading-relaxed text-white/55">{description}</p>
+
+      <ul className="mt-10 space-y-4">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-3 text-sm text-white/75">
+            <span
+              aria-hidden
+              className="mt-[2px] grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border border-white/20"
+              style={{
+                backgroundColor: emphasised ? `${ACCENT}22` : "transparent",
+              }}
+            >
+              <CheckIcon
+                className="h-3 w-3"
+                style={{ color: emphasised ? ACCENT : "rgba(255,255,255,0.6)" }}
+              />
+            </span>
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-10">
+        {emphasised ? (
+          <PrimaryCta href={ctaHref}>{ctaLabel}</PrimaryCta>
+        ) : (
+          <SecondaryCta href={ctaHref}>{ctaLabel}</SecondaryCta>
+        )}
+      </div>
+    </article>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bottom stats — two big numbers (mirrors the reference's footer)    */
+/* ------------------------------------------------------------------ */
+
+function BottomStatsSection() {
+  return (
+    <section className="relative border-t border-white/5">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-28 md:grid-cols-2 md:gap-20 md:py-36">
+        <BottomStat
+          value="2 min"
+          label="Briefings instead of fifteen"
+          body={`A working instructor taps through the tool and runs a full dive briefing in under two minutes. Save 13 minutes of student attention every single morning.`}
+        />
+        <BottomStat
+          value="0"
+          label="Whiteboards required"
+          body={`Retire the whiteboard, the flip chart, and the printed species sheet. One tool reads from the same canonical notes every instructor on your roster briefs from.`}
+        />
+      </div>
+
+      {/* Final accent CTA bar */}
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 pb-32 text-center">
+        <h2
+          className="max-w-2xl text-white"
+          style={{
+            fontSize: "clamp(2rem, 5vw, 3.5rem)",
+            lineHeight: 0.98,
+            letterSpacing: "-0.02em",
+            fontWeight: 900,
+          }}
+        >
+          Brief your next dive with {BUSINESS.name}.
+        </h2>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <PrimaryCta href="/contact">Apply for the pilot</PrimaryCta>
+          <SecondaryCta href="/koh-tao">Open the app</SecondaryCta>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BottomStat({
+  value,
+  label,
+  body,
+}: {
+  value: string;
+  label: string;
+  body: string;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <span
+        className="block text-white"
+        style={{
+          fontSize: "clamp(3.5rem, 9vw, 7rem)",
+          fontWeight: 900,
+          lineHeight: 0.9,
+          letterSpacing: "-0.03em",
+        }}
+      >
+        {value}
+      </span>
+      <p
+        className="text-xl text-white"
+        style={{ fontWeight: 900, lineHeight: 1.1 }}
+      >
+        {label}
+      </p>
+      <p className="max-w-md text-sm leading-relaxed text-white/55">{body}</p>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Inline SVG icons                                                   */
+/* ------------------------------------------------------------------ */
+
+function IconBase(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    />
+  );
+}
+
+function ArrowRightIcon({ className }: { className?: string }) {
+  return (
+    <IconBase className={className}>
+      <path d="M5 12h14" />
+      <path d="m13 5 7 7-7 7" />
+    </IconBase>
+  );
+}
+
+function BoltIcon({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <IconBase className={className}>
+      <path d="M13 2 3 14h9l-1 8 10-12h-9z" />
+    </IconBase>
+  );
+}
+
+function LayersIcon({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <IconBase className={className}>
+      <path d="M12 2 2 7l10 5 10-5-10-5z" />
+      <path d="m2 17 10 5 10-5" />
+      <path d="m2 12 10 5 10-5" />
+    </IconBase>
+  );
+}
+
+function SignalIcon({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <IconBase className={className}>
+      <path d="M2 20h.01" />
+      <path d="M7 20v-4" />
+      <path d="M12 20v-8" />
+      <path d="M17 20V8" />
+      <path d="M22 4v16" />
+    </IconBase>
+  );
+}
+
+function CheckIcon({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <IconBase className={className} style={style} strokeWidth={2.5}>
+      <path d="M20 6 9 17l-5-5" />
+    </IconBase>
   );
 }
