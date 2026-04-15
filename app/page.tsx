@@ -4,6 +4,7 @@ import { BUSINESS, OWNER } from "@/lib/business";
 import { DIVE_SITE_COUNT } from "@/lib/dive-sites";
 import { FISH_COUNT } from "@/lib/fish";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
+import { HeroScrollVideo } from "@/components/marketing/HeroScrollVideo";
 
 export const metadata: Metadata = {
   // Use `absolute` to bypass the layout's "%s | A Scuba Guide" template —
@@ -46,39 +47,46 @@ const FAQS: FaqItem[] = [
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-4xl px-4 py-12">
+    <main>
       <FaqSchema faqs={FAQS} />
 
-      <section aria-labelledby="hero-h1" className="space-y-6">
-        <p className="text-sm uppercase tracking-wide text-neutral-500">
-          For RAID, PADI and SSI dive schools on Koh Tao
-        </p>
-        <h1 id="hero-h1" className="text-4xl font-bold tracking-tight sm:text-5xl">
-          The dive briefing tool built by an instructor with {OWNER.diveCount.toLocaleString()}+ dives
-        </h1>
-        <p className="text-lg text-neutral-700">
-          {BUSINESS.name} replaces the whiteboard, the flip chart and the printed
-          species sheet with one tappable map of every Koh Tao dive site and every
-          fish your students will meet underwater. Free during early access for
-          every Koh Tao dive school.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/for-dive-schools"
-            className="rounded-md border border-neutral-900 px-4 py-2 font-medium"
-          >
-            For dive schools &rarr;
-          </Link>
-          <Link
-            href="/koh-tao"
-            className="rounded-md border border-neutral-300 px-4 py-2 font-medium"
-          >
-            Open the app
-          </Link>
-        </div>
-      </section>
+      {/* Full-viewport scroll-triggered video hero. Phase 4 design spike.
+          Owns its own floating nav; the shared Nav component from layout.tsx
+          suppresses itself on the homepage so there's no double-nav stack. */}
+      <HeroScrollVideo />
 
-      <section aria-labelledby="what" className="mt-16 space-y-4">
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        <section aria-labelledby="hero-subhead" className="space-y-6">
+          <h2
+            id="hero-subhead"
+            className="text-3xl font-bold tracking-tight sm:text-4xl"
+          >
+            The dive briefing tool built by an instructor with{" "}
+            {OWNER.diveCount.toLocaleString()}+ dives
+          </h2>
+          <p className="text-lg text-neutral-700">
+            {BUSINESS.name} replaces the whiteboard, the flip chart and the
+            printed species sheet with one tappable map of every Koh Tao dive
+            site and every fish your students will meet underwater. Free
+            during early access for every Koh Tao dive school.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/for-dive-schools"
+              className="rounded-md border border-neutral-900 px-4 py-2 font-medium"
+            >
+              For dive schools &rarr;
+            </Link>
+            <Link
+              href="/koh-tao"
+              className="rounded-md border border-neutral-300 px-4 py-2 font-medium"
+            >
+              Open the app
+            </Link>
+          </div>
+        </section>
+
+        <section aria-labelledby="what" className="mt-16 space-y-4">
         <h2 id="what" className="text-2xl font-semibold">
           What it actually does
         </h2>
@@ -206,6 +214,7 @@ export default function HomePage() {
           </a>
         </div>
       </section>
+      </div>
     </main>
   );
 }

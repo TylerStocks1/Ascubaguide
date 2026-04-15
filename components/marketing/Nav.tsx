@@ -1,10 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BUSINESS } from "@/lib/business";
 
 /**
- * Plain semantic nav. No styling beyond default Tailwind. Phase 4 redesigns.
+ * Shared marketing nav.
+ *
+ * On the homepage (`/`), this component renders NOTHING — the
+ * HeroScrollVideo component provides its own floating overlay nav that sits
+ * on top of the video background. Rendering this nav above it would stack
+ * two navs at the top of the page.
+ *
+ * On every other page, this renders the plain semantic nav used across the
+ * rest of the site. Phase 4 will style the interior-page nav separately
+ * once the design direction is locked.
  */
 export function Nav() {
+  const pathname = usePathname();
+  if (pathname === "/") return null;
+
   return (
     <header className="border-b border-neutral-200">
       <nav
