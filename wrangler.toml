@@ -1,0 +1,21 @@
+#:schema node_modules/wrangler/config-schema.json
+#
+# Cloudflare Pages config for A Scuba Guide.
+#
+# This file is primarily consumed by the Wrangler CLI for LOCAL previews
+# and manual deploys (`npm run pages:preview` and `npm run pages:deploy`).
+# Cloudflare Pages also reads the `pages_build_output_dir` and build
+# compatibility fields when a project is linked to this repo via the
+# Pages dashboard.
+#
+# The actual production deploy happens via Git → Cloudflare Pages
+# integration (see DEPLOY.md for step-by-step). Wrangler config here is
+# a convenience for dry-running the Pages build locally.
+
+name = "ascubaguide"
+compatibility_date = "2026-04-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Where @cloudflare/next-on-pages writes the static/functions bundle
+# after `npm run pages:build`.
+pages_build_output_dir = ".vercel/output/static"

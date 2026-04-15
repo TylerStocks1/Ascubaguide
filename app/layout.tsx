@@ -1,20 +1,42 @@
 import type { Metadata } from "next";
+import { Archivo, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { BUSINESS } from "@/lib/business";
 import { Nav } from "@/components/marketing/Nav";
-import { Footer } from "@/components/marketing/Footer";
+import { FooterSwitcher } from "@/components/marketing/FooterSwitcher";
 import { WebApplicationSchema } from "@/components/schema/WebApplicationSchema";
 
 /**
- * Root layout. Default system font stack — Phase 4 picks typography.
+ * Sitewide fonts.
  *
- * metadataBase = the canonical origin from lib/business.ts. All page-level
- * metadata extends this; canonical and OG URLs resolve relative to it.
+ *  - Archivo (weights 400/900) is bound to --font-display and is used
+ *    **only** on the hero's "A SCUBA / GUIDE" split headline — Tyler's
+ *    instruction: keep that face reserved for the hero moment so it
+ *    stays distinctive.
  *
- * The WebApplication JSON-LD lives here because it describes the whole site.
- * Person JSON-LD does NOT live here — it lives on /about where it is most
- * topically relevant (per CLAUDE.md schema rules).
+ *  - DM Sans (weights 400/500/700) is bound to --font-heading and is
+ *    used for every interior section headline below the hero. Chosen
+ *    for "clean bold typography" per Tyler's feedback after rejecting
+ *    Syne for having too much character. DM Sans is intentionally
+ *    neutral — functional, heavy at 700, reads confidently without
+ *    shouting. Pairs cleanly with Archivo's display moment.
+ *
+ *  - Body text inherits the default system sans stack via globals.css.
  */
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["400", "900"],
+  display: "swap",
+  variable: "--font-display",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-heading",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS.url),
   title: {
@@ -49,12 +71,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="bg-white text-neutral-900 antialiased">
+    <html
+      lang="en"
+      className={`${archivo.variable} ${dmSans.variable}`}
+    >
+      <body className="bg-background text-foreground antialiased">
         <WebApplicationSchema />
         <Nav />
         {children}
-        <Footer />
+        <FooterSwitcher />
       </body>
     </html>
   );

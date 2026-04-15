@@ -6,15 +6,69 @@
  * Phase 3 globals: intentionally plain. No custom fonts, no custom colors.
  * Phase 4 (design-assist) replaces this file with the chosen palette,
  * typography, and any shared component classes.
+ *
+ * Shadcn-style semantic tokens are set as HSL values below — these back
+ * the `bg-background / text-foreground / border-border / bg-card / text-
+ * muted-foreground / …` Tailwind utilities that the 21st.dev components
+ * in components/ui/ expect to find. The values are a dark theme because
+ * our homepage is dark; interior pages that want to render "on light"
+ * override these locally via inline style or a wrapper class.
  */
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+
+  /* Shadcn tokens — dark */
+  --background: 0 0% 3.9%;            /* near-black, matches bg-neutral-950 */
+  --foreground: 0 0% 98%;             /* near-white */
+  --card: 0 0% 5.5%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 5.5%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+  --radius: 0.75rem;
 }
 
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+}
+
+/*
+ * Typography base layer.
+ *
+ *   - <h1> is LEFT UNSTYLED here. The hero <h1> in HeroScrollVideo.tsx
+ *     tags itself with `font-display` (Archivo 900) so the "A SCUBA /
+ *     GUIDE" treatment stays distinctive. No other h1 should exist on
+ *     the homepage.
+ *
+ *   - <h2> / <h3> / <h4> default to Syne (font-heading). Every section
+ *     headline below the hero picks this up automatically — no need to
+ *     add a className per heading in app/page.tsx.
+ */
+@layer base {
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    /* DM Sans at 700 + tight tracking reads as clean/confident without
+       turning shouty the way 900 weights do. If you want it heavier,
+       swap this to 800 — DM Sans ships up to 1000. */
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
 }
 
 a {
@@ -24,4 +78,28 @@ a {
 
 a:hover {
   text-decoration: none;
+}
+
+/*
+ * Shimmer keyframe used by components/ui/light-rays.tsx. Each ray fades
+ * between a low and high opacity with a staggered delay, giving the
+ * group a subtle breathing / underwater-shimmer effect. Respected by
+ * prefers-reduced-motion via the global reduced-motion rule further
+ * down.
+ */
+@keyframes light-ray-shimmer {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateX(-50%) rotate(var(--ray-angle, 0deg)) scaleY(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateX(-50%) rotate(var(--ray-angle, 0deg)) scaleY(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-"] {
+    animation: none !important;
+  }
 }

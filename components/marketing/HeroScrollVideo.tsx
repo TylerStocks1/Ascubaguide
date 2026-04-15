@@ -275,11 +275,19 @@ export function HeroScrollVideo() {
 
   return (
     <>
+      {/* Floating nav — rendered OUTSIDE the sticky hero section so it
+          stays fixed to the viewport throughout the entire page. On the
+          homepage, this nav overlays the hero while the sticky hero is
+          in view, then keeps floating at the top of the viewport once
+          the user scrolls past the hero into the content sections below.
+          Tyler's ask: "the navbar should stick i think once past the
+          hero animation". */}
+      <HeroNav />
+
       {/* Outer 300vh container. A sticky h-screen section inside this
           container stays pinned to the viewport top from scrollY 0 up
           to scrollY 2vp, then unsticks and scrolls up and off between
-          2vp and 3vp. The gradient bridge div below handles the visual
-          handoff into the page content. */}
+          2vp and 3vp. */}
       <div
         ref={outerRef}
         className="relative"
@@ -327,8 +335,6 @@ export function HeroScrollVideo() {
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[300px] bg-gradient-to-b from-transparent to-neutral-950"
         />
 
-        <HeroNav />
-
         {/* Text chapters — only one visible at a time via opacity. */}
         <div className="pointer-events-none absolute inset-0 z-10">
           {CHAPTERS.map((c, i) => (
@@ -342,7 +348,7 @@ export function HeroScrollVideo() {
                 {c.eyebrow}
               </p>
               <h1
-                className="mt-6 text-white"
+                className="mt-6 font-display text-white"
                 aria-label={`${c.lineOne} ${c.lineTwo}`}
               >
                 <span
@@ -393,7 +399,7 @@ export function HeroScrollVideo() {
 
 function HeroNav() {
   return (
-    <header className="absolute inset-x-0 top-0 z-30 px-4 pt-4 sm:px-6 sm:pt-6">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 sm:pt-6">
       <nav
         aria-label="Primary"
         className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-[11px] uppercase tracking-[0.1em] text-white shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-[80px]"

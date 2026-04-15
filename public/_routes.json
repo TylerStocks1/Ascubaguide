@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "description": "Static-first routing for Cloudflare Pages. Everything under /frames, /images, /videos, /koh-tao, plus the standard static paths, is served direct from the edge without invoking a Function. Only app-router pages (JS-rendered) fall through to the Functions runtime.",
+  "include": ["/*"],
+  "exclude": [
+    "/_next/static/*",
+    "/_next/image*",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/llms.txt",
+    "/frames/*",
+    "/images/*",
+    "/videos/*",
+    "/koh-tao",
+    "/koh-tao/*"
+  ]
+}

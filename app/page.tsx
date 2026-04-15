@@ -5,6 +5,9 @@ import { BUSINESS, OWNER } from "@/lib/business";
 import { DIVE_SITE_COUNT } from "@/lib/dive-sites";
 import { FISH_COUNT } from "@/lib/fish";
 import { HeroScrollVideo } from "@/components/marketing/HeroScrollVideo";
+import { Component as InteractiveGlobe } from "@/components/ui/interactive-globe";
+import { ZoomParallax } from "@/components/ui/zoom-parallax";
+import { LightRays } from "@/components/ui/light-rays";
 
 /**
  * Homepage — dark editorial theme on top of the scroll-scrub hero.
@@ -32,17 +35,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-/** Warm sunset-red accent. Not #f97316 (banned PWA coral),
- *  not #ff5e00 (studiohazey). Sparingly used for the primary CTA
- *  and one or two accent glyphs — overusing it kills the effect. */
-const ACCENT = "#c44d37";
+/** Ocean-blue accent — Tyler's "blue and white for the ocean" pivot.
+ *  Deep cerulean at #0077b6, distinct from the banned PWA palette
+ *  (#0ea5e9 cyan and #f97316 coral) and the warm sunset-red the page
+ *  was using in the previous iteration. Sparingly used for primary
+ *  CTAs, feature-icon tint, and one or two accent glyphs — overusing
+ *  it kills the effect. */
+const ACCENT = "#0077b6";
+/** Subtler inland blue for hover states and secondary glows. */
+const ACCENT_BRIGHT = "#38b6d9";
 
 export default function HomePage() {
   return (
     <main className="bg-neutral-950 text-white">
       <HeroScrollVideo />
       <TrustedBySection />
-      <WhatWeOfferSection />
+      <GlobeSection />
+      <ZoomParallaxSection />
       <UsefulStatisticSection />
       <PricingSection />
       <BottomStatsSection />
@@ -113,8 +122,23 @@ function SecondaryCta({
 
 function TrustedBySection() {
   return (
-    <section className="border-b border-white/5">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 py-20 text-center sm:py-24">
+    <section className="relative border-b border-white/5">
+      {/* Underwater light rays — rendered as an absolutely-positioned
+          overlay inside this first content section. They span 2
+          viewports downward so the shimmer is visible from the moment
+          the hero gradient hands off into the page all the way through
+          the Globe section. The mix-blend-mode: screen inside the
+          component itself softens the rays against the dark bg. */}
+      <LightRays
+        className="h-[200vh]"
+        rayCount={13}
+        color="rgba(120, 190, 230, 0.32)"
+        opacity={0.55}
+        blur={55}
+        spreadAngle={60}
+      />
+
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-8 px-6 py-20 text-center sm:py-24">
         <p className="text-[11px] uppercase tracking-[0.3em] text-white/40">
           Built for dive schools teaching
         </p>
@@ -141,78 +165,128 @@ function TrustedBySection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  What we offer — 3 feature cards                                    */
+/*  Globe — replaces the old "What we offer" feature-card grid         */
+/*                                                                     */
+/*  Layout is lifted from the 21st.dev interactive-globe demo but with */
+/*  the "All systems operational" pill removed (Tyler's ask) and the   */
+/*  copy rewritten so the section reads as 'a global dive briefing     */
+/*  tool' rather than a generic global-edge-network brag.              */
 /* ------------------------------------------------------------------ */
 
-function WhatWeOfferSection() {
+function GlobeSection() {
   return (
     <section className="relative mx-auto max-w-6xl px-6 py-28 md:py-36">
-      <div className="mb-16 flex flex-col items-start gap-6 md:mb-20">
-        <SectionEyebrow>What we offer</SectionEyebrow>
-        <h2
-          className="max-w-3xl text-white"
-          style={{
-            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-            lineHeight: 0.95,
-            letterSpacing: "-0.02em",
-            fontWeight: 900,
-          }}
-        >
-          A briefing tool, not a whiteboard.
-        </h2>
-        <p className="max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
-          {DIVE_SITE_COUNT} Koh Tao dive sites and {FISH_COUNT}+ marine species,
-          written by a working RAID instructor and cross-linked so every
-          briefing reads from the same canonical notes.
-        </p>
-      </div>
+      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.02]">
+        {/* Ambient accent glow — ties the card to the warm homepage accent */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-1/4 top-0 h-96 w-96 rounded-full opacity-[0.08] blur-3xl"
+          style={{ backgroundColor: ACCENT }}
+        />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <FeatureCard
-          icon={<BoltIcon />}
-          title="Brief in 2 minutes"
-          body="Whiteboard briefings eat fifteen. Tap the dive site, see depth, difficulty, species, hazards. Done. Save an hour of student attention every morning."
-        />
-        <FeatureCard
-          icon={<LayersIcon />}
-          title="Every site. Every species."
-          body={`${DIVE_SITE_COUNT} Koh Tao dive sites and ${FISH_COUNT}+ fish entries, each cross-linked to its complementary set. No other dive briefing tool has the data model.`}
-        />
-        <FeatureCard
-          icon={<SignalIcon />}
-          title="Works on the boat"
-          body="Load once, brief anywhere. Day boats don't have signal — that's fine. The tool caches locally and runs offline for the entire dive trip."
-        />
+        <div className="flex min-h-[500px] flex-col md:flex-row">
+          {/* Left: copy */}
+          <div className="relative z-10 flex flex-1 flex-col justify-center p-10 md:p-14">
+            <SectionEyebrow>Global dive briefing</SectionEyebrow>
+            <h2
+              className="mt-6 max-w-md text-white"
+              style={{
+                fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
+                lineHeight: 0.98,
+                letterSpacing: "-0.025em",
+                fontWeight: 900,
+              }}
+            >
+              Built for divers.
+              <br />
+              <span style={{ color: ACCENT }}>Wherever they dive.</span>
+            </h2>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-white/60 md:text-base">
+              A Scuba Guide is built for the instructors of Koh Tao today —
+              and shaped to expand to every coast the sun reaches. Drag the
+              globe to explore.
+            </p>
+
+            <div className="mt-10 flex items-center gap-6">
+              <div>
+                <p className="text-2xl font-black text-white">
+                  {DIVE_SITE_COUNT}
+                </p>
+                <p className="text-xs uppercase tracking-wider text-white/40">
+                  Dive sites
+                </p>
+              </div>
+              <div className="h-8 w-px bg-white/10" />
+              <div>
+                <p className="text-2xl font-black text-white">{FISH_COUNT}+</p>
+                <p className="text-xs uppercase tracking-wider text-white/40">
+                  Species
+                </p>
+              </div>
+              <div className="h-8 w-px bg-white/10" />
+              <div>
+                <p className="text-2xl font-black text-white">
+                  {OWNER.diveCount.toLocaleString()}+
+                </p>
+                <p className="text-xs uppercase tracking-wider text-white/40">
+                  Dives logged
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: globe */}
+          <div className="flex min-h-[400px] flex-1 items-center justify-center p-4 md:p-0">
+            <InteractiveGlobe size={460} />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function FeatureCard({
-  icon,
-  title,
-  body,
-}: {
-  icon: ReactNode;
-  title: string;
-  body: string;
-}) {
+/* ------------------------------------------------------------------ */
+/*  Zoom Parallax — real images dropped into /public/images/           */
+/*                                                                     */
+/*  The component renders up to 7 images in a parallax/zoom effect.    */
+/*  Tyler currently has 3 real shots; we repeat them across the 7      */
+/*  slots so every position has a frame to render. When more images    */
+/*  land, just add them to the array — the component automatically     */
+/*  cycles through `scales[index % scales.length]`.                    */
+/* ------------------------------------------------------------------ */
+
+const REAL_DIVE_IMAGES = [
+  { src: "/images/image1.png", alt: "Koh Tao dive scene" },
+  { src: "/images/image2.png", alt: "Koh Tao underwater moment" },
+  { src: "/images/fish3.jpg", alt: "Reef fish" },
+];
+
+/** Pad the real image set out to 7 slots by cycling through what's
+ *  available. Keeps the parallax from having empty tiles until Tyler
+ *  adds more photos. */
+const ZOOM_PARALLAX_IMAGES = Array.from({ length: 7 }, (_, i) =>
+  REAL_DIVE_IMAGES[i % REAL_DIVE_IMAGES.length]
+);
+
+function ZoomParallaxSection() {
   return (
-    <article className="group relative flex flex-col gap-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.04]">
-      <div
-        className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 text-white"
-        style={{ backgroundColor: `${ACCENT}22` }}
-      >
-        <span style={{ color: ACCENT }}>{icon}</span>
+    <section aria-label="Dive moments" className="relative">
+      <div className="relative mx-auto mb-12 max-w-6xl px-6 text-center">
+        <SectionEyebrow>Field moments</SectionEyebrow>
+        <h2
+          className="mt-6 mx-auto max-w-3xl text-white"
+          style={{
+            fontSize: "clamp(2rem, 5vw, 3.5rem)",
+            lineHeight: 0.98,
+            letterSpacing: "-0.02em",
+            fontWeight: 900,
+          }}
+        >
+          Scroll to dive.
+        </h2>
       </div>
-      <h3
-        className="text-2xl text-white"
-        style={{ fontWeight: 900, letterSpacing: "-0.01em", lineHeight: 1.05 }}
-      >
-        {title}
-      </h3>
-      <p className="text-sm leading-relaxed text-white/60">{body}</p>
-    </article>
+      <ZoomParallax images={ZOOM_PARALLAX_IMAGES} />
+    </section>
   );
 }
 
@@ -581,36 +655,6 @@ function ArrowRightIcon({ className }: { className?: string }) {
     <IconBase className={className}>
       <path d="M5 12h14" />
       <path d="m13 5 7 7-7 7" />
-    </IconBase>
-  );
-}
-
-function BoltIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <IconBase className={className}>
-      <path d="M13 2 3 14h9l-1 8 10-12h-9z" />
-    </IconBase>
-  );
-}
-
-function LayersIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <IconBase className={className}>
-      <path d="M12 2 2 7l10 5 10-5-10-5z" />
-      <path d="m2 17 10 5 10-5" />
-      <path d="m2 12 10 5 10-5" />
-    </IconBase>
-  );
-}
-
-function SignalIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <IconBase className={className}>
-      <path d="M2 20h.01" />
-      <path d="M7 20v-4" />
-      <path d="M12 20v-8" />
-      <path d="M17 20V8" />
-      <path d="M22 4v16" />
     </IconBase>
   );
 }
