@@ -5,7 +5,8 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Pricing — Free Early Access for Dive Schools | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `Pricing — Free Early Access for Dive Schools`,
   description: `${BUSINESS.name} is free for Koh Tao dive schools during the early-access pilot. Every instructor, every student, every site included. Apply now.`,
   alternates: { canonical: "/pricing" },
 };

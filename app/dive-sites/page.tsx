@@ -6,7 +6,8 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Koh Tao Dive Sites — Interactive Map of All ${DIVE_SITE_COUNT} | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `Koh Tao Dive Sites — All ${DIVE_SITE_COUNT} Mapped`,
   description: `Explore all ${DIVE_SITE_COUNT} dive sites around Koh Tao with depth, difficulty, hand-drawn maps and the fish you'll see. Tap any site to brief it.`,
   alternates: { canonical: "/dive-sites" },
 };

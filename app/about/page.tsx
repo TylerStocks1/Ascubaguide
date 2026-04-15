@@ -6,7 +6,8 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `About ${OWNER.name} — RAID Instructor & Founder | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `${OWNER.name} — RAID Instructor & Founder`,
   description: `The RAID instructor behind ${BUSINESS.name}: ${OWNER.diveCount.toLocaleString()}+ dives on Koh Tao, building the briefing tool he wished he'd had as a new instructor.`,
   alternates: { canonical: "/about" },
 };

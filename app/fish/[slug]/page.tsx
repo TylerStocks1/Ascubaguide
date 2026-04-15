@@ -24,8 +24,12 @@ export function generateStaticParams(): Params[] {
 export function generateMetadata({ params }: { params: Params }): Metadata {
   const fish = getFishBySlug(params.slug);
   if (!fish) return {};
+  // Title pattern fits the longest species name ("Blue-spotted Ribbontail
+  // Ray, Koh Tao" = 52 chars with brand) under the 60-char ceiling.
+  // Primary keyword "[species] koh tao" is preserved.
+  // Brand suffix applied by the layout's "%s | A Scuba Guide" template.
   return {
-    title: `${fish.name} in Koh Tao — Sites, Behavior & Depth | ${BUSINESS.name}`,
+    title: `${fish.name}, Koh Tao`,
     description: `${fish.name} (${fish.scientificName}) on Koh Tao: depth range, behavior, ${
       fish.sites?.length ? "where to find it" : "habitat and diet"
     }. Built into the ${BUSINESS.name} briefing tool.`,

@@ -5,7 +5,8 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Contact — Request a Demo or Pilot | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `Contact — Request a Demo or Pilot`,
   description: `Book a 20-min demo with ${OWNER.firstName}, request a free pilot for your dive school, or just say hi. Real responses from a real RAID instructor, usually within 24 hours.`,
   alternates: { canonical: "/contact" },
 };

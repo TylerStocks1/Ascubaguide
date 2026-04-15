@@ -14,10 +14,12 @@ import { BUSINESS, OWNER } from "@/lib/business";
  * WebApplication only).
  */
 export function PersonSchema() {
+  // @id must match the reference emitted by WebApplicationSchema
+  // (creator.@id and WebSite.publisher.@id). Do not change in isolation.
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "@id": `${BUSINESS.url}#george`,
+    "@id": `${BUSINESS.url}/about#george`,
     name: OWNER.name,
     givenName: OWNER.firstName,
     jobTitle: OWNER.jobTitle,

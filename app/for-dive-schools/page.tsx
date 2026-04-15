@@ -7,7 +7,9 @@ import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 
 export const metadata: Metadata = {
-  title: `Dive School Briefing Tool — Free Pilot | ${BUSINESS.name}`,
+  // Brand suffix added automatically by the "%s | A Scuba Guide" template
+  // in app/layout.tsx — do not include it here.
+  title: `Dive School Briefing Tool — Free Pilot`,
   description:
     "Free during early access for RAID, PADI, and SSI dive schools on Koh Tao. Replace whiteboards with a visual briefing tool. Apply for the pilot.",
   alternates: { canonical: "/for-dive-schools" },

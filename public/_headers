@@ -1,0 +1,31 @@
+# Cloudflare Pages headers configuration.
+# https://developers.cloudflare.com/pages/configuration/headers/
+#
+# Per seo-geo-implementation skill Step 3.6.
+
+# Block the .pages.dev preview subdomain from being indexed. Without this,
+# ascubaguide.pages.dev becomes a duplicate of ascubaguide.com and Google
+# splits the rankings. The wildcard matches any project name — belt and
+# braces even if the project name changes.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+# Same for Cloudflare Pages branch previews.
+https://:branch.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+# Global security headers for every response.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+
+# The PWA mount at /koh-tao is its own app with its own internal routes.
+# Do not let search engines index the raw mount URL — the marketing site's
+# /for-divers page is the canonical entry point for that content.
+/koh-tao
+  X-Robots-Tag: noindex
+/koh-tao/*
+  X-Robots-Tag: noindex

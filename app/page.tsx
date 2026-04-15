@@ -6,7 +6,11 @@ import { FISH_COUNT } from "@/lib/fish";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Dive Briefing App for Koh Tao Schools | ${BUSINESS.name}`,
+  // Use `absolute` to bypass the layout's "%s | A Scuba Guide" template —
+  // the home page owns its full title and positions the brand last itself.
+  title: {
+    absolute: `${BUSINESS.name} — Dive Briefing App for Koh Tao Schools`,
+  },
   description:
     "Replace whiteboards and flip charts with a visual briefing tool covering 24 Koh Tao dive sites and 100+ species. See it in action.",
   alternates: { canonical: "/" },

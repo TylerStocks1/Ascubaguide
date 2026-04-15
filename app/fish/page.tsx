@@ -6,7 +6,8 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Koh Tao Marine Life Guide — ${FISH_COUNT}+ Species by Site | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `Koh Tao Marine Life — ${FISH_COUNT}+ Species`,
   description: `Browse ${FISH_COUNT}+ fish, sharks and invertebrates of Koh Tao — filtered by dive site, depth and behavior. The only fish library tied to real dive briefings.`,
   alternates: { canonical: "/fish" },
 };

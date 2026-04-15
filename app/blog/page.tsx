@@ -4,7 +4,10 @@ import { BUSINESS, OWNER } from "@/lib/business";
 import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 
 export const metadata: Metadata = {
-  title: `${BUSINESS.name} Blog — Briefing Tips & Koh Tao Marine Life`,
+  // Using `absolute` because the default "%s | A Scuba Guide" template
+  // would produce "... Blog ... | A Scuba Guide" — redundant since the
+  // title already contains the brand name.
+  title: { absolute: `${BUSINESS.name} Blog — Briefing Tips & Koh Tao Marine Life` },
   description: `Field-tested briefing techniques, dive-site write-ups, and Koh Tao species deep-dives from ${OWNER.name} and ${BUSINESS.name}.`,
   alternates: { canonical: "/blog" },
 };

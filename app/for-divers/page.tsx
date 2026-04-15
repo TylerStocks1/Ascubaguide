@@ -7,7 +7,8 @@ import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 
 export const metadata: Metadata = {
-  title: `Koh Tao Dive Guide App — 24 Sites, 100+ Fish | ${BUSINESS.name}`,
+  // Brand suffix applied by the layout's title template.
+  title: `Koh Tao Dive Guide App — Sites & Species`,
   description:
     "Free dive companion for Koh Tao. Browse 24 dive sites and 100+ fish species on any phone. No app store needed — install in one tap.",
   alternates: { canonical: "/for-divers" },

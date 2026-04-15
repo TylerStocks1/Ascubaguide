@@ -45,10 +45,16 @@ export function Footer() {
           </p>
           <p>
             Website by{" "}
+            {/*
+              rel="nofollow" is required by Google for commercial attribution
+              links per seo-geo-implementation skill. Do not remove without
+              reading that skill's "What NOT to Do" section.
+            */}
             <a
               href="https://stockslocal.co.uk"
               className="underline"
-              rel="noopener"
+              rel="nofollow noopener"
+              target="_blank"
             >
               Stocks Local
             </a>

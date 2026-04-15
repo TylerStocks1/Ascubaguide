@@ -24,9 +24,14 @@ export function generateStaticParams(): Params[] {
 export function generateMetadata({ params }: { params: Params }): Metadata {
   const site = getDiveSiteBySlug(params.slug);
   if (!site) return {};
+  // Title pattern fits the longest dive site name ("312 Wreck (HTMS Hanhak
+  // Sattru) Dive Site" = 56 chars with brand) under the 60-char ceiling.
+  // Primary keyword "[site name] dive site" is preserved.
+  // Brand suffix applied by the layout's "%s | A Scuba Guide" template —
+  // do not include it here.
   return {
-    title: `${site.name} Dive Site Guide — Depth & Fish | ${BUSINESS.name}`,
-    description: `${site.name}: ${site.depth}, ${site.difficulty.toLowerCase()}. ${site.highlights.slice(0, 3).join(", ")}. Full species list and briefing.`,
+    title: `${site.name} Dive Site`,
+    description: `${site.name}, Koh Tao: ${site.depth}, ${site.difficulty.toLowerCase()}. ${site.highlights.slice(0, 3).join(", ")}. Full species list and briefing.`,
     alternates: { canonical: `/dive-sites/${site.id}` },
   };
 }

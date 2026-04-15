@@ -5,7 +5,10 @@ import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 
 export const metadata: Metadata = {
-  title: `Install ${BUSINESS.name} on iPhone or Android — No App Store`,
+  // Using `absolute` because the title already contains the brand name
+  // inline ("Install A Scuba Guide on...") so the default template would
+  // double it.
+  title: { absolute: `Install ${BUSINESS.name} on iPhone or Android — No App Store` },
   description: `Step-by-step guide to install ${BUSINESS.name} as an app on your phone in 30 seconds. Works on iOS Safari, Chrome and any modern browser. No store needed.`,
   alternates: { canonical: "/install" },
 };
