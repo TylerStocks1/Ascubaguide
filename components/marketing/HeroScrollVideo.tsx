@@ -22,23 +22,22 @@ import Link from "next/link";
  *      yet, we simply skip the draw call, so the previous frame stays
  *      painted — no black flash.
  *
- *   3. Layout: the hero is `position: fixed` at z-0, so it stays pinned
- *      to the viewport regardless of scroll. Alongside the fixed hero
- *      is a plain spacer div (300vh tall) that takes up document space.
- *      The content sections below the spacer have `z-10 bg-neutral-950`
- *      and flow in normal document order — when the user scrolls past
- *      the spacer, the content rises UP OVER the fixed hero rather
- *      than the hero scrolling away. That's the "page goes on top of
- *      the animation" feel Tyler asked for.
+ *   3. Layout: outer container 300vh tall with a sticky inner `section`
+ *      pinned at `top: 0; height: 100vh`. The sticky child stays in
+ *      the viewport from scrollY 0 → 2vp while the animation plays
+ *      through; from scrollY 2vp → 3vp the sticky unsticks and the
+ *      hero scrolls up and off the top of the viewport normally. A
+ *      gradient-bridge div sits IMMEDIATELY AFTER the outer container
+ *      so that as the hero scrolls away, the first thing that enters
+ *      from below is a deep-ocean-blue → page-background gradient —
+ *      Tyler's ask: make the ocean from the last frame feel like it
+ *      blurs into the page.
  *
  *      Math: viewport = vp.
- *        - scrollY   0 → animation progress 0
- *        - scrollY 2vp → animation progress 1 (animation done)
- *        - scrollY 2vp → 3vp: animation held at last frame while the
- *          content section slides up from the bottom of the viewport
- *          to the top, covering the fixed hero
- *        - scrollY 3vp+: content fills the viewport; hero is fully
- *          covered but still technically there behind it
+ *        - scrollY    0    →    animation progress 0
+ *        - scrollY   2vp   →    animation progress 1 (last frame)
+ *        - scrollY 2vp-3vp →    hero sticky unsticks, scrolls up and off
+ *        - scrollY   3vp+  →    gradient bridge then page content
  *
  *   4. Text chapters have the same progress-range system as before —
  *      each chapter visible for part of the [0, 1] range with gaps
@@ -275,14 +274,19 @@ export function HeroScrollVideo() {
 
   return (
     <>
-      {/* Fixed hero — pinned to the viewport at z-0 for its entire life.
-          Content sections in app/page.tsx live at z-10 with an opaque
-          background and flow in normal document order; when the user
-          scrolls past the spacer below, those sections rise UP OVER
-          this fixed layer rather than the hero scrolling away. */}
+      {/* Outer 300vh container. A sticky h-screen section inside this
+          container stays pinned to the viewport top from scrollY 0 up
+          to scrollY 2vp, then unsticks and scrolls up and off between
+          2vp and 3vp. The gradient bridge div below handles the visual
+          handoff into the page content. */}
+      <div
+        ref={outerRef}
+        className="relative"
+        style={{ height: reducedMotion ? "100vh" : "300vh" }}
+      >
       <section
         aria-label="A Scuba Guide — Koh Tao"
-        className="fixed inset-0 z-0 h-screen w-full overflow-hidden bg-neutral-950 text-white"
+        className="sticky top-0 h-screen w-full overflow-hidden bg-neutral-950 text-white"
       >
         {/* First frame as a plain <img> underneath the canvas — acts as
             a fallback while the canvas waits for its first draw, and as
@@ -366,18 +370,34 @@ export function HeroScrollVideo() {
           <p className="mt-1">2026</p>
         </div>
       </section>
+      </div>
 
-      {/* Spacer div — in-flow, invisible. Takes up 300vh of document
-          height so the user has scroll range to drive the animation
-          (scrollY 0 → 2vp = progress 0 → 1) and then slide the content
-          section up over the hero (scrollY 2vp → 3vp). Under reduced-
-          motion we collapse to 100vh so the user just sees one hero
-          viewport before the content. */}
-      <div
-        aria-hidden
-        ref={outerRef}
-        style={{ height: reducedMotion ? "100vh" : "300vh" }}
-      />
+      {/*
+        Ocean → page gradient bridge.
+
+        As the sticky hero scrolls up and off the top of the viewport
+        (around scrollY 2vp → 3vp), this gradient div is the next
+        thing the user sees entering from the bottom. It starts at
+        the deep ocean-blue that dominates the last frame of the
+        hero video and fades to the page background (warm off-white),
+        making the underwater color feel like it's dissolving INTO
+        the page — Tyler's ask: "so it looks like the ocean from
+        the last frame of the video is bluring into the page".
+
+        Height 70vh so the gradient has room to breathe. Under
+        reduced-motion we skip it — the static first-frame img above
+        is hero enough without a theatrical transition.
+      */}
+      {!reducedMotion && (
+        <div
+          aria-hidden
+          className="h-[70vh] w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom, #06141f 0%, #0a2436 18%, #1a3a4a 38%, #5a7888 62%, #c8c4b8 84%, #ffffff 100%)",
+          }}
+        />
+      )}
     </>
   );
 }

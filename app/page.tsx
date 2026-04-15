@@ -50,20 +50,11 @@ export default function HomePage() {
     <main>
       <FaqSchema faqs={FAQS} />
 
-      {/* Full-viewport scroll-triggered video hero. Renders a fixed hero
-          at z-0 plus a 300vh spacer in document flow. Owns its own
-          floating nav; the shared Nav component from layout.tsx
-          suppresses itself on the homepage so there's no double-nav stack. */}
+      {/* Hero: 300vh outer with a sticky h-screen section inside, then
+          a gradient bridge that fades the underwater deep-blue into the
+          page background. After the gradient, normal document content. */}
       <HeroScrollVideo />
 
-      {/*
-        Content sections — wrapped in a `relative z-10 bg-neutral-950`
-        layer so they flow in document order AFTER the hero spacer and,
-        when the user scrolls past that spacer, slide UP OVER the fixed
-        hero behind them (instead of the hero scrolling away). That's
-        the "page goes on top of the animation" effect.
-      */}
-      <div className="relative z-10 bg-neutral-950 text-neutral-100">
       <div className="mx-auto max-w-4xl px-4 py-12">
         <section aria-labelledby="hero-subhead" className="space-y-6">
           <h2
@@ -223,7 +214,6 @@ export default function HomePage() {
           </a>
         </div>
       </section>
-      </div>
       </div>
     </main>
   );
