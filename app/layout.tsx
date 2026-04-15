@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Archivo, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { BUSINESS } from "@/lib/business";
-import { Nav } from "@/components/marketing/Nav";
-import { FooterSwitcher } from "@/components/marketing/FooterSwitcher";
+import { FloatingNav } from "@/components/marketing/FloatingNav";
+import { Footer } from "@/components/ui/footer-section";
 import { WebApplicationSchema } from "@/components/schema/WebApplicationSchema";
 
 /**
@@ -77,9 +77,9 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground antialiased">
         <WebApplicationSchema />
-        <Nav />
+        <FloatingNav />
         {children}
-        <FooterSwitcher />
+        <Footer />
       </body>
     </html>
   );

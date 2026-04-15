@@ -39,11 +39,11 @@ interface LightRaysProps {
 
 export function LightRays({
   className,
-  rayCount = 11,
-  color = "rgba(140, 200, 230, 0.35)",
-  opacity = 0.55,
-  blur = 50,
-  spreadAngle = 55,
+  rayCount = 8,
+  color = "rgba(140, 200, 230, 0.18)",
+  opacity = 0.28,
+  blur = 70,
+  spreadAngle = 50,
 }: LightRaysProps) {
   // Deterministic ray layout so server and client render identically
   // and React doesn't throw hydration warnings. Widths and delays are

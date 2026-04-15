@@ -43,17 +43,8 @@ const footerLinks: FooterSection[] = [
     links: [
       { title: "For dive schools", href: "/for-dive-schools" },
       { title: "For divers", href: "/for-divers" },
-      { title: "Pricing", href: "/pricing" },
-      { title: "Install guide", href: "/install" },
-    ],
-  },
-  {
-    label: "Koh Tao",
-    links: [
-      { title: "Dive sites", href: "/dive-sites" },
-      { title: "Fish species", href: "/fish" },
-      { title: "Open the app", href: "/koh-tao" },
-      { title: "Blog", href: "/blog" },
+      { title: "Try the app", href: "/app" },
+      { title: "Download app", href: "/download" },
     ],
   },
   {
@@ -92,9 +83,26 @@ export function Footer() {
             © {new Date().getFullYear()} A Scuba Guide. Built by George
             Blizzard on Koh Tao.
           </p>
+          {/*
+            Agency attribution required on every Stocks Local client site.
+            rel="nofollow" is mandatory for commercial attribution links
+            per Google's link scheme guidance. Do not remove without
+            reading seo-geo-implementation skill.
+          */}
+          <p className="text-muted-foreground text-xs">
+            Website by{" "}
+            <a
+              href="https://stockslocal.co.uk"
+              rel="nofollow noopener"
+              target="_blank"
+              className="hover:text-foreground underline underline-offset-2 transition"
+            >
+              Stocks Local
+            </a>
+          </p>
         </AnimatedContainer>
 
-        <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
+        <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-3 xl:col-span-2 xl:mt-0">
           {footerLinks.map((section, index) => (
             <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
               <div className="mb-10 md:mb-0">

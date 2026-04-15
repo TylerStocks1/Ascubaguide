@@ -42,8 +42,6 @@ export const metadata: Metadata = {
  *  CTAs, feature-icon tint, and one or two accent glyphs — overusing
  *  it kills the effect. */
 const ACCENT = "#0077b6";
-/** Subtler inland blue for hover states and secondary glows. */
-const ACCENT_BRIGHT = "#38b6d9";
 
 export default function HomePage() {
   return (
@@ -248,25 +246,23 @@ function GlobeSection() {
 /* ------------------------------------------------------------------ */
 /*  Zoom Parallax — real images dropped into /public/images/           */
 /*                                                                     */
-/*  The component renders up to 7 images in a parallax/zoom effect.    */
-/*  Tyler currently has 3 real shots; we repeat them across the 7      */
-/*  slots so every position has a frame to render. When more images    */
-/*  land, just add them to the array — the component automatically     */
-/*  cycles through `scales[index % scales.length]`.                    */
+/*  The component renders 7 tiled images at different zoom levels.     */
+/*  INDEX 0 is the centre tile that fills the screen at max scroll,    */
+/*  so that slot gets the hero image. Tyler asked for fish3.jpg to     */
+/*  be the zoom target — positioning it at index 0 satisfies that.    */
+/*  Remaining slots cycle through the other two real photos.           */
 /* ------------------------------------------------------------------ */
 
-const REAL_DIVE_IMAGES = [
+const ZOOM_PARALLAX_IMAGES = [
+  // Index 0 — centre / zoom-into target
+  { src: "/images/fish3.jpg", alt: "Reef fish close-up" },
   { src: "/images/image1.png", alt: "Koh Tao dive scene" },
   { src: "/images/image2.png", alt: "Koh Tao underwater moment" },
-  { src: "/images/fish3.jpg", alt: "Reef fish" },
+  { src: "/images/image1.png", alt: "Koh Tao dive scene" },
+  { src: "/images/image2.png", alt: "Koh Tao underwater moment" },
+  { src: "/images/image1.png", alt: "Koh Tao dive scene" },
+  { src: "/images/image2.png", alt: "Koh Tao underwater moment" },
 ];
-
-/** Pad the real image set out to 7 slots by cycling through what's
- *  available. Keeps the parallax from having empty tiles until Tyler
- *  adds more photos. */
-const ZOOM_PARALLAX_IMAGES = Array.from({ length: 7 }, (_, i) =>
-  REAL_DIVE_IMAGES[i % REAL_DIVE_IMAGES.length]
-);
 
 function ZoomParallaxSection() {
   return (
@@ -333,7 +329,7 @@ function UsefulStatisticSection() {
               The only Koh Tao briefing tool with a bi-directional data model.
             </p>
             <div className="pt-2">
-              <SecondaryCta href="/dive-sites">Explore the data</SecondaryCta>
+              <SecondaryCta href="/app">Explore the data</SecondaryCta>
             </div>
           </div>
 
@@ -449,7 +445,7 @@ function PricingSection() {
             "Early access to new cities",
             "Same tool, same data",
           ]}
-          ctaHref="/pricing"
+          ctaHref="/about"
           ctaLabel="Learn more"
         />
       </div>
@@ -591,7 +587,7 @@ function BottomStatsSection() {
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <PrimaryCta href="/contact">Apply for the pilot</PrimaryCta>
-          <SecondaryCta href="/koh-tao">Open the app</SecondaryCta>
+          <SecondaryCta href="/download">Download app</SecondaryCta>
         </div>
       </div>
     </section>

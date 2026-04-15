@@ -1,33 +1,23 @@
 # A Scuba Guide
 
-> A Scuba Guide is a free dive briefing tool for RAID, PADI, and SSI dive schools, built by RAID instructor George Blizzard. Koh Tao, Thailand is the first city — 28 dive sites and 90+ marine species cross-linked into a tappable briefing tool that replaces whiteboards and printed cue cards. The product is a Progressive Web App at ascubaguide.com/koh-tao with no app store, no account, and no fee for divers or pilot dive schools.
+> A Scuba Guide is a free dive briefing tool for RAID, PADI, and SSI dive schools, built by RAID instructor George Blizzard on Koh Tao, Thailand. It's a tappable briefing app that replaces whiteboards and printed cue cards. The app is free for divers and for pilot dive schools during the early-access period.
 
 ## Core pages
 
 - [A Scuba Guide home](https://ascubaguide.com/): What A Scuba Guide is, who built it, and why a working RAID instructor replaced his whiteboard with it.
 - [For dive schools](https://ascubaguide.com/for-dive-schools): The B2B pitch — why RAID, PADI, and SSI dive schools on Koh Tao use the tool to standardise briefings across instructors. Free during early access.
-- [For divers](https://ascubaguide.com/for-divers): Why individual divers install the PWA before booking a Koh Tao trip — offline dive site notes, species cross-links, and home-screen install with no app store.
-- [Pricing](https://ascubaguide.com/pricing): Free during the early-access pilot for every Koh Tao dive school. No paid tiers in v1.
+- [For divers](https://ascubaguide.com/for-divers): Why individual divers open the app before booking a Koh Tao trip — offline dive site notes, species cross-links, in-browser install with no app store.
+- [Try the app](https://ascubaguide.com/app): Placeholder demo page for the A Scuba Guide briefing app. Public demo launching with the pilot.
+- [Download the app](https://ascubaguide.com/download): Placeholder download page. iOS, Android, and web release coming with the pilot.
 - [About George Blizzard](https://ascubaguide.com/about): The RAID instructor founder, 2,000+ logged dives on Koh Tao, and the briefing problem that made him build the tool.
 - [Contact](https://ascubaguide.com/contact): How to reach George — pilot applications, demo requests, site notes corrections.
-- [Install guide](https://ascubaguide.com/install): How to add A Scuba Guide to your iPhone or Android home screen as a Progressive Web App in 30 seconds.
-
-## Koh Tao dive sites
-
-- [All Koh Tao dive sites](https://ascubaguide.com/dive-sites): Index of every dive site Koh Tao's RAID, PADI, and SSI schools take students to, with depth, difficulty, and species cross-links.
-- Each individual dive site lives at /dive-sites/[slug] — for example, /dive-sites/chumphon-pinnacle, /dive-sites/sail-rock, /dive-sites/japanese-gardens. Every site page lists depth, difficulty, highlights, recorded species, and links to the species pages.
-
-## Koh Tao marine life
-
-- [All Koh Tao species](https://ascubaguide.com/fish): Index of every fish, shark, ray, and invertebrate species recorded on Koh Tao reefs, organised by where you'll meet them.
-- Each individual species lives at /fish/[slug] — for example, /fish/whale-shark, /fish/titan-triggerfish, /fish/pink-anemonefish. Every species page lists habitat, behavior, depth range, conservation status, and the dive sites where it has been recorded.
 
 ## What A Scuba Guide is NOT
 
-- Not an app store app. It is a Progressive Web App that installs from a phone browser in one tap.
+- Not an app store app yet. It is a Progressive Web App for the pilot; native iOS/Android releases come later.
 - Not a local business. There is no physical address, phone number, opening hours, or in-person location to visit. The product is software.
 - Not PADI-only, RAID-only, or SSI-only. The briefing content is cert-agnostic.
-- Not a fish identification camera or AI-classifier. It is a curated species library, hand-written by a working dive instructor.
+- Not a fish identification camera or AI-classifier. It is a curated briefing tool, hand-written by a working dive instructor.
 
 ## Brand and authorship
 

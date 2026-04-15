@@ -1,29 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BUSINESS, OWNER } from "@/lib/business";
-import { DIVE_SITE_COUNT } from "@/lib/dive-sites";
-import { FISH_COUNT } from "@/lib/fish";
 import { FaqSchema, type FaqItem } from "@/components/schema/FaqSchema";
 import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
 
 export const metadata: Metadata = {
-  // Brand suffix applied by the layout's title template.
   title: `Koh Tao Dive Guide App — Sites & Species`,
   description:
-    "Free dive companion for Koh Tao. Browse 24 dive sites and 100+ fish species on any phone. No app store needed — install in one tap.",
+    "Free dive companion for Koh Tao. Browse every dive site and species on any phone. No app store needed — install in one tap.",
   alternates: { canonical: "/for-divers" },
 };
+
+const ACCENT = "#0077b6";
 
 const FAQS: FaqItem[] = [
   {
     question: "Is it really free?",
     answer:
       "Yes — completely free for divers. There are no in-app purchases, ads, accounts, or upsells. The app is funded via the dive-school product, not via you.",
-  },
-  {
-    question: "How do I install it on my phone?",
-    answer:
-      "Open ascubaguide.com/koh-tao in Safari (iPhone) or Chrome (Android), then choose 'Add to Home Screen' from the share menu. It now behaves like a normal app — full screen, offline, no browser bar. Step-by-step instructions are on the install page.",
   },
   {
     question: "Will it work on the boat without signal?",
@@ -39,109 +33,137 @@ const FAQS: FaqItem[] = [
 
 export default function ForDiversPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-12">
+    <main className="relative min-h-screen bg-neutral-950 text-white">
       <BreadcrumbSchema crumbs={[{ name: "For divers", path: "/for-divers" }]} />
       <FaqSchema faqs={FAQS} />
 
-      <p className="text-sm uppercase tracking-wide text-neutral-500">
-        For divers booking a Koh Tao trip
-      </p>
-      <h1 className="mt-2 text-4xl font-bold tracking-tight">
-        Know every dive site on Koh Tao before you hit the water
-      </h1>
-      <p className="mt-6 text-lg text-neutral-700">
-        {BUSINESS.name} is a free dive companion for Koh Tao. Browse{" "}
-        {DIVE_SITE_COUNT} dive sites and {FISH_COUNT}+ fish species on any phone,
-        cross-linked so you can jump from a site to its species and back. No app
-        store, no account, no fee. Built by {OWNER.firstName}, a working RAID
-        instructor on Koh Tao.
-      </p>
-
-      <section className="mt-12 space-y-4">
-        <h2 className="text-2xl font-semibold">Why divers actually use it</h2>
-        <ul className="list-disc space-y-2 pl-6">
-          <li>
-            <strong>Plan your trip.</strong> See depths, difficulties and the
-            highlights of every Koh Tao site before you book.
-          </li>
-          <li>
-            <strong>Brief yourself.</strong> Tap any site to read what to expect
-            — currents, swim-throughs, the species you might see.
-          </li>
-          <li>
-            <strong>ID what you saw.</strong> Tap any species after the dive to
-            confirm what you spotted and read its behaviour notes.
-          </li>
-          <li>
-            <strong>Works offline.</strong> Add to your home screen once and the
-            data lives on your phone for the whole trip.
-          </li>
-        </ul>
-      </section>
-
-      <section className="mt-12 space-y-4">
-        <h2 className="text-2xl font-semibold">It is not an app store app</h2>
-        <p>
-          {BUSINESS.name} is a Progressive Web App. You open a URL in your
-          phone&apos;s browser, hit &ldquo;Add to Home Screen&rdquo;, and from
-          that point on it launches like a native app — full screen, with its
-          own icon, working offline. There is no App Store review, no Play Store
-          download, no permissions request, no tracking SDK. It is just a
-          well-built website that happens to behave like an app.
-        </p>
-        <p>
-          <Link href="/install">See the 30-second install guide &rarr;</Link>
-        </p>
-      </section>
-
-      <section className="mt-12 space-y-4">
-        <h2 className="text-2xl font-semibold">Browse before you install</h2>
-        <p>
-          Every dive site and every species is on the public site already. You
-          can read everything from your laptop on the way to the airport.
-        </p>
-        <ul className="list-disc space-y-1 pl-6">
-          <li>
-            <Link href="/dive-sites">All {DIVE_SITE_COUNT} Koh Tao dive sites &rarr;</Link>
-          </li>
-          <li>
-            <Link href="/fish">All {FISH_COUNT}+ Koh Tao species &rarr;</Link>
-          </li>
-        </ul>
-      </section>
-
-      <section className="mt-12 space-y-4">
-        <h2 className="text-2xl font-semibold">Frequently asked questions</h2>
-        <dl className="space-y-6">
-          {FAQS.map((f) => (
-            <div key={f.question}>
-              <dt className="font-semibold">{f.question}</dt>
-              <dd className="mt-1 text-neutral-700">{f.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-12 rounded-lg border border-neutral-200 p-6">
-        <h2 className="text-2xl font-semibold">Open the app</h2>
-        <p className="mt-2 text-neutral-700">
-          One tap. No account. Works on every phone.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link
-            href="/koh-tao"
-            className="rounded-md border border-neutral-900 px-4 py-2 font-medium"
-          >
-            Open the Koh Tao app
-          </Link>
-          <Link
-            href="/install"
-            className="rounded-md border border-neutral-300 px-4 py-2 font-medium"
-          >
-            Install instructions
-          </Link>
+      <div className="mx-auto max-w-4xl px-6 pt-36 pb-32 md:pt-44">
+        <div className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-white/50">
+          <span aria-hidden className="block h-px w-10 bg-white/30" />
+          <span>For divers booking a Koh Tao trip</span>
         </div>
-      </section>
+
+        <h1
+          className="mt-8 text-white"
+          style={{
+            fontSize: "clamp(2.5rem, 7vw, 5rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.025em",
+            fontWeight: 700,
+          }}
+        >
+          Know every dive site on Koh Tao{" "}
+          <span style={{ color: ACCENT }}>before you hit the water.</span>
+        </h1>
+
+        <p className="mt-10 max-w-2xl text-lg leading-relaxed text-white/70">
+          {BUSINESS.name} is a free dive companion for Koh Tao. Every dive
+          site and every fish, on any phone, cross-linked so you can jump
+          from a site to its species and back. No app store, no account, no
+          fee. Built by {OWNER.firstName}, a working RAID instructor on Koh
+          Tao.
+        </p>
+
+        <section className="mt-20 space-y-6">
+          <h2
+            className="text-white"
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 3rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Why divers actually use it.
+          </h2>
+          <ul className="space-y-4 text-base leading-relaxed text-white/70 md:text-lg">
+            <li className="flex gap-3">
+              <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span>
+                <strong className="text-white">Plan your trip.</strong> See
+                depths, difficulties and highlights of every Koh Tao site
+                before you book.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span>
+                <strong className="text-white">Brief yourself.</strong> Tap
+                any site to read what to expect — currents, swim-throughs,
+                the species you might see.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span>
+                <strong className="text-white">ID what you saw.</strong> Tap
+                any species after the dive to confirm what you spotted and
+                read its behaviour notes.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: ACCENT }} />
+              <span>
+                <strong className="text-white">Works offline.</strong> Load
+                once and the data lives on your phone for the whole trip.
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section className="mt-20 space-y-8">
+          <h2
+            className="text-white"
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 3rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Frequently asked questions.
+          </h2>
+          <dl className="space-y-8">
+            {FAQS.map((f) => (
+              <div key={f.question} className="border-t border-white/10 pt-6">
+                <dt className="text-lg font-semibold text-white">
+                  {f.question}
+                </dt>
+                <dd className="mt-3 text-base leading-relaxed text-white/65">
+                  {f.answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="mt-24 flex flex-col items-start gap-6 rounded-3xl border border-white/10 bg-white/[0.02] p-10 md:p-14">
+          <h2
+            className="text-white"
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 3rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Try the app.
+          </h2>
+          <p className="max-w-xl text-base leading-relaxed text-white/65">
+            The demo is coming soon. In the meantime, apply for the pilot
+            and {OWNER.firstName} will drop you a link directly.
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/app"
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white no-underline transition hover:-translate-y-[1px] hover:shadow-[0_10px_40px_rgba(0,119,182,0.35)]"
+              style={{ backgroundColor: ACCENT }}
+            >
+              Try the app →
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.03] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white no-underline transition hover:bg-white/[0.08]"
+            >
+              Contact {OWNER.firstName} →
+            </Link>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

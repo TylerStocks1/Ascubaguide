@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 
 /**
  * Scroll-bound hero animation — sticky container + canvas frame sequence.
@@ -275,14 +274,9 @@ export function HeroScrollVideo() {
 
   return (
     <>
-      {/* Floating nav — rendered OUTSIDE the sticky hero section so it
-          stays fixed to the viewport throughout the entire page. On the
-          homepage, this nav overlays the hero while the sticky hero is
-          in view, then keeps floating at the top of the viewport once
-          the user scrolls past the hero into the content sections below.
-          Tyler's ask: "the navbar should stick i think once past the
-          hero animation". */}
-      <HeroNav />
+      {/* The floating nav used to live inline here. It now lives in
+          app/layout.tsx via <FloatingNav /> so every route (homepage
+          + interior) picks up the same fixed dark glass pill. */}
 
       {/* Outer 300vh container. A sticky h-screen section inside this
           container stays pinned to the viewport top from scrollY 0 up
@@ -299,7 +293,10 @@ export function HeroScrollVideo() {
       >
         {/* First frame as a plain <img> underneath the canvas — acts as
             a fallback while the canvas waits for its first draw, and as
-            the sole visual for users with reduced motion. */}
+            the sole visual for users with reduced motion. next/image is
+            not used on purpose: the canvas immediately paints over this
+            element, so optimisation isn't worth the hydration cost. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={frameUrl(0)}
           alt=""
@@ -393,70 +390,6 @@ export function HeroScrollVideo() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Floating nav — self-contained                                      */
-/* ------------------------------------------------------------------ */
-
-function HeroNav() {
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 sm:pt-6">
-      <nav
-        aria-label="Primary"
-        className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-[11px] uppercase tracking-[0.1em] text-white shadow-[0_8px_40px_rgba(0,0,0,0.25)] backdrop-blur-[80px]"
-      >
-        <Link
-          href="/"
-          className="whitespace-nowrap text-sm font-black tracking-tight no-underline"
-        >
-          A Scuba Guide
-        </Link>
-
-        <ul className="hidden items-center gap-6 sm:flex">
-          <li>
-            <Link
-              href="/dive-sites"
-              className="whitespace-nowrap no-underline transition hover:text-white/60"
-            >
-              Dive sites
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/fish"
-              className="whitespace-nowrap no-underline transition hover:text-white/60"
-            >
-              Species
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/about"
-              className="whitespace-nowrap no-underline transition hover:text-white/60"
-            >
-              About
-            </Link>
-          </li>
-        </ul>
-
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="grid h-9 w-9 place-items-center rounded-lg border border-white/20 bg-white/5 sm:hidden"
-        >
-          <span aria-hidden className="flex flex-col gap-1">
-            <span className="block h-[1.5px] w-4 bg-white" />
-            <span className="block h-[1.5px] w-4 bg-white" />
-            <span className="block h-[1.5px] w-4 bg-white" />
-          </span>
-        </button>
-
-        <Link
-          href="/koh-tao"
-          className="whitespace-nowrap rounded-full border border-white/30 bg-white/15 px-4 py-2 no-underline transition hover:bg-white/25"
-        >
-          Open the app
-        </Link>
-      </nav>
-    </header>
-  );
-}
+// HeroNav was extracted to components/marketing/FloatingNav.tsx and is
+// rendered sitewide from app/layout.tsx. This file is no longer
+// responsible for the nav.
