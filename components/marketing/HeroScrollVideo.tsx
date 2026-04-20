@@ -3,393 +3,197 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Scroll-bound hero animation — sticky container + canvas frame sequence.
+ * Full-bleed looping video hero with a single bold "A Scuba Guide"
+ * display headline overlay.
  *
- * Model (per Tyler's follow-up feedback 2026-04-15):
+ * Replaces the previous 121-frame scroll-scrubbed canvas animation —
+ * per Tyler's direction the hero is now just the video playing at the
+ * top with bold type on it. Native page scroll behaves normally; the
+ * hero unsticks the moment the user scrolls.
  *
- *   1. No scroll hijack. Native page scroll drives everything. The user
- *      can scroll up and down freely; animation progress follows the
- *      scroll position. If they scroll back up, the animation reverses.
- *      If they scroll past the animation range, the hero naturally
- *      unsticks and content below comes into view.
- *
- *   2. Frames render to a <canvas> via drawImage(), not to an <img>
- *      tag via src swapping. The old approach flickered black between
- *      frames because each src swap triggered a browser re-paint cycle,
- *      even on cached images. Canvas drawImage is synchronous: the
- *      pixels update instantly with zero gap. If a frame hasn't loaded
- *      yet, we simply skip the draw call, so the previous frame stays
- *      painted — no black flash.
- *
- *   3. Layout: outer container 300vh tall with a sticky inner `section`
- *      pinned at `top: 0; height: 100vh`. The sticky child stays in
- *      the viewport from scrollY 0 → 2vp while the animation plays
- *      through; from scrollY 2vp → 3vp the sticky unsticks and the
- *      hero scrolls up and off the top of the viewport normally.
- *      A simple bottom-of-hero gradient fades the last 300px of the
- *      hero into neutral-950 (the page background colour), so when
- *      the hero scrolls away the dark bottom of the video seamlessly
- *      meets the dark page below — no hard cut, no dedicated bridge
- *      section. Tyler's ask: `absolute bottom-0 h-[300px] transparent
- *      → black`, exactly like the reference.
- *
- *      Math: viewport = vp.
- *        - scrollY    0    →    animation progress 0
- *        - scrollY   2vp   →    animation progress 1 (last frame)
- *        - scrollY 2vp-3vp →    hero scrolls up and off
- *        - scrollY   3vp+  →    dark page content on bg-neutral-950
- *
- *   4. Text chapters have the same progress-range system as before —
- *      each chapter visible for part of the [0, 1] range with gaps
- *      between chapters so at most one is on screen at any time.
- *
- *   5. prefers-reduced-motion: the canvas is replaced by a static
- *      first-frame img, all chapters beyond the first are hidden, and
- *      scroll is never locked (it already isn't). The animation simply
- *      does not play; the initial frame and headline stay put.
- *
- * Frame source
- * ------------
- * 121 WebP frames at /public/frames/hero/0001.webp .. 0121.webp,
- * extracted from the 10.04s hero video at 12fps with ffmpeg. Total
- * payload ~5.8 MB. See the npm / build script (TODO) for the
- * extraction command, mirrored here for reference:
- *
- *   ffmpeg -y -i public/videos/hero.mp4 -vf "fps=12" \
- *     -c:v libwebp -quality 78 -compression_level 6 \
- *     public/frames/hero/%04d.webp
+ * Reduced-motion: the video is replaced by the first-frame poster
+ * (still shipped in /public/frames/hero/0001.webp) and does not auto-
+ * play. Headline + subline stay put.
  */
 
-const FRAME_COUNT = 121;
-
-const frameUrl = (index: number) =>
-  `/frames/hero/${String(index + 1).padStart(4, "0")}.webp`;
-
-type Chapter = {
-  eyebrow: string;
-  lineOne: string;
-  lineTwo: string;
-  outlineSecondLine?: boolean;
-  range: [number, number];
-};
-
-const CHAPTERS: Chapter[] = [
-  {
-    eyebrow: "For RAID · PADI · SSI dive schools",
-    lineOne: "A Scuba",
-    lineTwo: "Guide",
-    outlineSecondLine: true,
-    range: [0.0, 0.22],
-  },
-  {
-    eyebrow: "Replace the whiteboard",
-    lineOne: "One tool.",
-    lineTwo: "Every briefing.",
-    range: [0.28, 0.48],
-  },
-  {
-    eyebrow: "Koh Tao — every site, every species",
-    lineOne: "28 dive sites.",
-    lineTwo: "91+ species.",
-    range: [0.56, 0.75],
-  },
-  {
-    eyebrow: "Built by an instructor",
-    lineOne: "2,000+ dives.",
-    lineTwo: "One obsession.",
-    range: [0.83, 1.0],
-  },
-];
-
-function deriveChapter(progress: number): number | null {
-  for (let i = 0; i < CHAPTERS.length; i++) {
-    const [start, end] = CHAPTERS[i].range;
-    if (progress >= start && progress <= end) return i;
-  }
-  return null;
-}
+const POSTER_SRC = "/frames/hero/0001.webp";
+const VIDEO_SOURCES = ["/videos/hero.mp4", "/videos/hero2.mp4"] as const;
 
 export function HeroScrollVideo() {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  /** Pre-fetched image objects. index = frame - 1. */
-  const imagesRef = useRef<HTMLImageElement[]>([]);
-  /** Last frame index drawn to canvas; lets us skip redundant draws. */
-  const lastDrawnFrameRef = useRef(-1);
-
-  const [chapter, setChapter] = useState<number | null>(0);
-  /** Reduced motion: skip the animation entirely and show static first
-   *  frame + first chapter text. */
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
-
-  /* ------------------------------------------------------------------ */
-  /*  Reduced-motion detection                                           */
-  /* ------------------------------------------------------------------ */
+  const [videoIndex, setVideoIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener?.("change", handler);
+    return () => mq.removeEventListener?.("change", handler);
   }, []);
 
-  /* ------------------------------------------------------------------ */
-  /*  Preload the frame sequence                                         */
-  /* ------------------------------------------------------------------ */
-
+  // When one clip ends, swap to the other. This gives the hero a
+  // cycling A → B → A → B sequence instead of a single loop, so the
+  // footage stays fresh for anyone who lingers on the page.
   useEffect(() => {
-    if (reducedMotion) return;
-    const imgs: HTMLImageElement[] = [];
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const img = new Image();
-      img.decoding = "async";
-      img.src = frameUrl(i);
-      imgs.push(img);
-    }
-    imagesRef.current = imgs;
-  }, [reducedMotion]);
+    const video = videoRef.current;
+    if (!video || reducedMotion) return;
+    const onEnded = () => {
+      setVideoIndex((i) => (i + 1) % VIDEO_SOURCES.length);
+    };
+    video.addEventListener("ended", onEnded);
+    return () => video.removeEventListener("ended", onEnded);
+  }, [reducedMotion, videoIndex]);
 
-  /* ------------------------------------------------------------------ */
-  /*  Canvas sizing                                                      */
-  /*                                                                     */
-  /*  Canvas internal resolution is tied to devicePixelRatio so we get   */
-  /*  crisp frames on retina. Recompute on resize.                       */
-  /* ------------------------------------------------------------------ */
-
+  // When videoIndex changes, React rerenders the <video> with a new
+  // `src` and the element must be manually kicked into play() because
+  // autoPlay only fires on the initial mount.
   useEffect(() => {
-    if (reducedMotion) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      const targetW = Math.max(1, Math.floor(rect.width * dpr));
-      const targetH = Math.max(1, Math.floor(rect.height * dpr));
-      if (canvas.width !== targetW || canvas.height !== targetH) {
-        canvas.width = targetW;
-        canvas.height = targetH;
-        // Force a redraw on the next rAF tick by invalidating the
-        // last-drawn frame index.
-        lastDrawnFrameRef.current = -1;
-      }
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, [reducedMotion]);
-
-  /* ------------------------------------------------------------------ */
-  /*  Scroll-driven rAF loop                                             */
-  /*                                                                     */
-  /*  Every rAF tick, reads scroll position, derives progress, redraws   */
-  /*  the canvas if the frame index changed, and updates chapter state   */
-  /*  if needed. rAF is cheaper than a scroll handler doing layout work  */
-  /*  and gets us vsync-aligned frame updates.                           */
-  /* ------------------------------------------------------------------ */
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    let raf = 0;
-    let stopped = false;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    /** Draw a frame to the canvas using cover-fit geometry, matching
-     *  the behaviour of `object-fit: cover`. If the frame image isn't
-     *  loaded yet, just bail out — the canvas keeps whatever it last
-     *  painted, so there's no flash of black. */
-    const drawFrame = (index: number) => {
-      const img = imagesRef.current[index];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
-
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const imgAspect = img.naturalWidth / img.naturalHeight;
-      const canvasAspect = cw / ch;
-      let dw: number;
-      let dh: number;
-      let dx: number;
-      let dy: number;
-      if (imgAspect > canvasAspect) {
-        // Image is wider than canvas — match height, overflow width
-        dh = ch;
-        dw = dh * imgAspect;
-        dx = (cw - dw) / 2;
-        dy = 0;
-      } else {
-        // Image is taller than canvas — match width, overflow height
-        dw = cw;
-        dh = dw / imgAspect;
-        dx = 0;
-        dy = (ch - dh) / 2;
-      }
-      ctx.drawImage(img, dx, dy, dw, dh);
-      lastDrawnFrameRef.current = index;
-    };
-
-    const tick = () => {
-      if (stopped) return;
-
-      // Progress is simply scrollY / (2 × viewport). Animation completes
-      // at scrollY = 2vp, after which progress clamps at 1 and the
-      // content section below the spacer slides up over the fixed hero
-      // from scrollY = 2vp to 3vp.
-      const vh = window.innerHeight;
-      const animationRange = vh * 2;
-      const progress = Math.max(
-        0,
-        Math.min(1, window.scrollY / animationRange)
-      );
-
-      const frameIndex = Math.min(
-        FRAME_COUNT - 1,
-        Math.max(0, Math.round(progress * (FRAME_COUNT - 1)))
-      );
-      if (frameIndex !== lastDrawnFrameRef.current) {
-        drawFrame(frameIndex);
-      }
-
-      const nextChapter = deriveChapter(progress);
-      setChapter((current) =>
-        current === nextChapter ? current : nextChapter
-      );
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => {
-      stopped = true;
-      cancelAnimationFrame(raf);
-    };
-  }, [reducedMotion]);
-
-  /* ------------------------------------------------------------------ */
-  /*  Render                                                             */
-  /* ------------------------------------------------------------------ */
+    const video = videoRef.current;
+    if (!video || reducedMotion) return;
+    video.load();
+    void video.play().catch(() => {
+      // Autoplay can still be blocked on some browsers; poster remains.
+    });
+  }, [videoIndex, reducedMotion]);
 
   return (
-    <>
-      {/* The floating nav used to live inline here. It now lives in
-          app/layout.tsx via <FloatingNav /> so every route (homepage
-          + interior) picks up the same fixed dark glass pill. */}
-
-      {/* Outer 300vh container. A sticky h-screen section inside this
-          container stays pinned to the viewport top from scrollY 0 up
-          to scrollY 2vp, then unsticks and scrolls up and off between
-          2vp and 3vp. */}
-      <div
-        ref={outerRef}
-        className="relative"
-        style={{ height: reducedMotion ? "100vh" : "300vh" }}
-      >
-      <section
-        aria-label="A Scuba Guide — Koh Tao"
-        className="sticky top-0 h-screen w-full overflow-hidden bg-neutral-950 text-white"
-      >
-        {/* First frame as a plain <img> underneath the canvas — acts as
-            a fallback while the canvas waits for its first draw, and as
-            the sole visual for users with reduced motion. next/image is
-            not used on purpose: the canvas immediately paints over this
-            element, so optimisation isn't worth the hydration cost. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+    <section
+      aria-label="A Scuba Guide — Koh Tao"
+      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-[#001626] text-white"
+    >
+      {/* Background video. playsInline + muted lets iOS autoplay. The
+          `key` on the element forces React to recreate the video when
+          we swap sources between hero.mp4 and hero2.mp4. */}
+      {!reducedMotion ? (
+        <video
+          key={VIDEO_SOURCES[videoIndex]}
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          src={VIDEO_SOURCES[videoIndex]}
+          poster={POSTER_SRC}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden
+        />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={frameUrl(0)}
+          src={POSTER_SRC}
           alt=""
           aria-hidden
           draggable={false}
           className="absolute inset-0 h-full w-full object-cover"
         />
+      )}
 
-        {/* Frame canvas — sits above the fallback img, redrawn by the
-            rAF loop. Hidden under reduced-motion (static img shows). */}
-        {!reducedMotion && (
-          <canvas
-            ref={canvasRef}
-            className="absolute inset-0 h-full w-full"
-            aria-hidden
-          />
-        )}
+      {/* Ocean gradient wash — deepens the video into the page below and
+          tilts the hue toward caribbean-blue. `mix-blend-multiply`
+          keeps the underwater texture but drops everything onto a
+          cohesive palette. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-[#001626]/55 via-[#002d4a]/30 to-[#001626]/85 mix-blend-multiply"
+      />
 
-        {/* Readability dim — subtle top-to-bottom darken so the white
-            headline type stays legible against bright underwater frames. */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/40"
-        />
-
-        {/* Bottom fade — 300px of transparent → neutral-950 at the very
-            bottom of the hero. Matches the `bg-neutral-950` page below
-            exactly, so when the sticky hero scrolls up the fade merges
-            into the page content with no visible seam. This replaced
-            the old 70vh gradient-bridge div (too long, wrong palette). */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[300px] bg-gradient-to-b from-transparent to-neutral-950"
-        />
-
-        {/* Text chapters — only one visible at a time via opacity. */}
-        <div className="pointer-events-none absolute inset-0 z-10">
-          {CHAPTERS.map((c, i) => (
-            <div
-              key={i}
-              className={`absolute inset-0 flex flex-col items-center justify-center px-6 text-center transition-opacity duration-500 ease-out ${
-                chapter === i ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <p className="text-[10px] uppercase tracking-[0.4em] text-white/75 sm:text-xs">
-                {c.eyebrow}
-              </p>
-              <h1
-                className="mt-6 font-display text-white"
-                aria-label={`${c.lineOne} ${c.lineTwo}`}
-              >
-                <span
-                  className="block font-black uppercase"
-                  style={{
-                    fontSize: "clamp(3rem, 11vw, 10rem)",
-                    lineHeight: 0.9,
-                    letterSpacing: "-0.015em",
-                  }}
-                >
-                  {c.lineOne}
-                </span>
-                <span
-                  className="block font-black uppercase"
-                  style={{
-                    fontSize: "clamp(2.25rem, 8vw, 7.5rem)",
-                    lineHeight: 0.9,
-                    letterSpacing: c.outlineSecondLine ? "0.02em" : "-0.015em",
-                    ...(c.outlineSecondLine
-                      ? {
-                          WebkitTextStroke: "2px rgba(255,255,255,0.9)",
-                          color: "transparent",
-                        }
-                      : {}),
-                  }}
-                >
-                  {c.lineTwo}
-                </span>
-              </h1>
-            </div>
-          ))}
-        </div>
-
-        {/* Field-journal caption bottom-left */}
-        <div className="absolute bottom-8 left-6 z-20 text-[10px] uppercase tracking-[0.3em] text-white/55 sm:text-xs">
-          <p>Koh Tao · Thailand</p>
-          <p className="mt-1">2026</p>
-        </div>
-      </section>
+      {/* Caustic shimmer — a cheap CSS-only "pool light" pattern
+          layered with low opacity for subtle movement. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-screen">
+        <div className="absolute -inset-20 animate-[causticDrift_14s_ease-in-out_infinite] bg-[radial-gradient(circle_at_20%_30%,rgba(120,210,255,0.35),transparent_45%),radial-gradient(circle_at_80%_60%,rgba(80,180,240,0.3),transparent_50%),radial-gradient(circle_at_50%_80%,rgba(180,240,255,0.25),transparent_45%)]" />
       </div>
-    </>
+
+      {/* Bottom fade → page bg. Long fade (400px) over the video + a
+          bottom curtain of pure page-bg ensures the hero flows into the
+          next section with no hard seam. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[400px] bg-gradient-to-b from-transparent via-[#04131c]/70 to-[#04131c]"
+      />
+
+      {/* SVG wave divider — sits on the seam and physically shapes the
+          handover into the page below. */}
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] h-16 w-full text-[#04131c]"
+        viewBox="0 0 1440 80"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0 40 Q 240 0 480 40 T 960 40 T 1440 40 L 1440 80 L 0 80 Z"
+          fill="currentColor"
+        />
+      </svg>
+
+      {/* Headline overlay */}
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-center px-6 sm:px-10">
+        <p className="mb-8 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.4em] text-white/75 sm:text-xs">
+          <span aria-hidden className="block h-px w-10 bg-white/60" />
+          Koh Tao · Thailand
+        </p>
+        <h1
+          className="font-display text-white"
+          style={{
+            lineHeight: 0.82,
+            letterSpacing: "-0.035em",
+            fontWeight: 900,
+            textShadow: "0 6px 40px rgba(0,20,40,0.35)",
+          }}
+        >
+          <span
+            className="block uppercase"
+            style={{ fontSize: "clamp(3.25rem, 14vw, 13rem)" }}
+          >
+            A Scuba
+          </span>
+          <span
+            className="block uppercase italic"
+            style={{
+              fontSize: "clamp(3.25rem, 14vw, 13rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            <span
+              className="bg-gradient-to-r from-[#7fdbff] via-[#bde9ff] to-white bg-clip-text text-transparent"
+            >
+              Guide
+            </span>
+          </span>
+        </h1>
+
+        <p className="mt-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+          The dive-briefing tool built by a working instructor. Every Koh
+          Tao site, every species, cross-linked and tappable on the boat.
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center gap-3">
+          <a
+            href="/contact"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/25 bg-white/10 px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white no-underline backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:bg-white/15 hover:shadow-[0_20px_50px_-20px_rgba(120,210,255,0.6)]"
+          >
+            <span className="relative z-10">Apply for the pilot</span>
+            <span className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+            <span
+              aria-hidden
+              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+            />
+          </a>
+          <a
+            href="/app"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/85 no-underline transition hover:border-white/30 hover:text-white"
+          >
+            Try the app →
+          </a>
+        </div>
+      </div>
+
+      {/* Scroll cue */}
+      <div className="pointer-events-none absolute bottom-10 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-white/55">
+        <span>Dive in</span>
+        <span aria-hidden className="block h-10 w-px animate-[scrollCue_2.4s_ease-in-out_infinite] bg-gradient-to-b from-white/80 to-transparent" />
+      </div>
+    </section>
   );
 }
-
-// HeroNav was extracted to components/marketing/FloatingNav.tsx and is
-// rendered sitewide from app/layout.tsx. This file is no longer
-// responsible for the nav.

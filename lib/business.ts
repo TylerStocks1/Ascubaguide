@@ -64,9 +64,9 @@ export const BUSINESS = {
  * gracefully and never invent a value.
  */
 export const OWNER = {
-  name: "George Blizzard",
-  /** First-person handle used in headings: "George" */
-  firstName: "George",
+  name: "Blizz",
+  /** First-person handle used in headings: "Blizz" */
+  firstName: "Blizz",
   /** Job title for schema and bio */
   jobTitle: "RAID Dive Instructor",
   /** Primary credential — appears on /about only */

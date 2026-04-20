@@ -18,8 +18,8 @@
 :root {
   color-scheme: dark;
 
-  /* Shadcn tokens — dark */
-  --background: 0 0% 3.9%;            /* near-black, matches bg-neutral-950 */
+  /* Shadcn tokens — deep-ocean dark */
+  --background: 205 50% 6%;           /* #04131c — deep ocean navy */
   --foreground: 0 0% 98%;             /* near-white */
   --card: 0 0% 5.5%;
   --card-foreground: 0 0% 98%;
@@ -41,34 +41,35 @@
   --radius: 0.75rem;
 }
 
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+:root {
+  /* Fontshare faces, pulled via <link> in app/layout.tsx.
+     Exposed as CSS variables so Tailwind `font-display` / `font-heading`
+     keep working across the codebase. */
+  --font-display: "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Satoshi", ui-sans-serif, system-ui, sans-serif;
 }
 
-/*
- * Typography base layer.
- *
- *   - <h1> is LEFT UNSTYLED here. The hero <h1> in HeroScrollVideo.tsx
- *     tags itself with `font-display` (Archivo 900) so the "A SCUBA /
- *     GUIDE" treatment stays distinctive. No other h1 should exist on
- *     the homepage.
- *
- *   - <h2> / <h3> / <h4> default to Syne (font-heading). Every section
- *     headline below the hero picks this up automatically — no need to
- *     add a className per heading in app/page.tsx.
- */
+body {
+  font-family: "Satoshi", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 @layer base {
+  h1 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+  }
   h2,
   h3,
   h4 {
     font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
-    /* DM Sans at 700 + tight tracking reads as clean/confident without
-       turning shouty the way 900 weights do. If you want it heavier,
-       swap this to 800 — DM Sans ships up to 1000. */
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
   }
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif !important;
 }
 
 a {
@@ -78,6 +79,77 @@ a {
 
 a:hover {
   text-decoration: none;
+}
+
+/*
+ * Oceanic caustic drift — slow, looping radial-gradient shift that mimics
+ * the way pool light wanders across an underwater frame. Subtle on
+ * purpose (opacity is applied via an inline wrapper, not here).
+ */
+@keyframes causticDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(2%, -1.5%, 0) scale(1.04);
+  }
+  66% {
+    transform: translate3d(-1.5%, 2%, 0) scale(1.02);
+  }
+}
+
+/* Hero scroll cue — faint vertical line fades top→bottom on loop */
+@keyframes scrollCue {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+}
+
+/* Slow float used for ambient glyphs / bubbles */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+/* Fish swimming across a container (decorative school) */
+@keyframes fishSwim {
+  0% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(110vw, 0, 0);
+  }
+}
+
+@keyframes fishSwimReverse {
+  0% {
+    transform: translate3d(110vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(-12vw, 0, 0);
+  }
+}
+
+/* Bubble rising animation — used in DepthDescent for ambient dive feel */
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  50% {
+    transform: translateY(-50vh) translateX(10px);
+  }
+  100% {
+    transform: translateY(-110vh) translateX(-6px);
+    opacity: 0;
+  }
+}
+
+/* Gradient sheen used on glass surfaces */
+@keyframes shimmerSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /*
@@ -96,6 +168,35 @@ a:hover {
     opacity: 0.85;
     transform: translateX(-50%) rotate(var(--ray-angle, 0deg)) scaleY(1.03);
   }
+}
+
+/* Liquid-glass utility — applied via className="glass" */
+.glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 20px 60px -20px rgba(0, 40, 80, 0.55);
+}
+
+.glass-strong {
+  background: linear-gradient(
+    135deg,
+    rgba(180, 225, 255, 0.12) 0%,
+    rgba(30, 90, 140, 0.08) 100%
+  );
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(150, 210, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 30px 80px -30px rgba(0, 90, 160, 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {
