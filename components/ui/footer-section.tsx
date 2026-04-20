@@ -50,7 +50,7 @@ const footerLinks: FooterSection[] = [
   {
     label: "Company",
     links: [
-      { title: "About George", href: "/about" },
+      { title: "About Blizz", href: "/about" },
       { title: "Contact", href: "/contact" },
       // TODO: privacy policy boilerplate pending — BLOCKERS.md
       { title: "Privacy", href: "#" },
@@ -80,8 +80,8 @@ export function Footer() {
         <AnimatedContainer className="space-y-4">
           <WavesIcon className="size-8" />
           <p className="text-muted-foreground mt-8 text-sm md:mt-0">
-            © {new Date().getFullYear()} A Scuba Guide. Built by George
-            Blizzard on Koh Tao.
+            © {new Date().getFullYear()} A Scuba Guide. Built by Blizz on
+            Koh Tao.
           </p>
           {/*
             Agency attribution required on every Stocks Local client site.
@@ -92,7 +92,7 @@ export function Footer() {
           <p className="text-muted-foreground text-xs">
             Website by{" "}
             <a
-              href="https://stockslocal.co.uk"
+              href="https://stockslocal.com"
               rel="nofollow noopener"
               target="_blank"
               className="hover:text-foreground underline underline-offset-2 transition"

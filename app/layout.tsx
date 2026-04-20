@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Archivo, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { BUSINESS } from "@/lib/business";
 import { FloatingNav } from "@/components/marketing/FloatingNav";
@@ -7,40 +6,23 @@ import { Footer } from "@/components/ui/footer-section";
 import { WebApplicationSchema } from "@/components/schema/WebApplicationSchema";
 
 /**
- * Sitewide fonts.
+ * Sitewide fonts are loaded from Fontshare (via <link> in <head>).
  *
- *  - Archivo (weights 400/900) is bound to --font-display and is used
- *    **only** on the hero's "A SCUBA / GUIDE" split headline — Tyler's
- *    instruction: keep that face reserved for the hero moment so it
- *    stays distinctive.
+ *  - Clash Display (500/600/700) is bound to --font-display and is used
+ *    on every marquee headline. Clean, geometric, bold without shouting.
+ *    Replaces the previous Archivo 900 face.
  *
- *  - DM Sans (weights 400/500/700) is bound to --font-heading and is
- *    used for every interior section headline below the hero. Chosen
- *    for "clean bold typography" per Tyler's feedback after rejecting
- *    Syne for having too much character. DM Sans is intentionally
- *    neutral — functional, heavy at 700, reads confidently without
- *    shouting. Pairs cleanly with Archivo's display moment.
+ *  - Satoshi (400/500/700) is bound to --font-heading / body. Chosen for
+ *    readability + premium feel. Replaces DM Sans.
  *
- *  - Body text inherits the default system sans stack via globals.css.
+ *  Both faces are pulled from api.fontshare.com — no self-hosting. The
+ *  CSS variables below in globals.css wire them into Tailwind utilities.
  */
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "900"],
-  display: "swap",
-  variable: "--font-display",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-  variable: "--font-heading",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS.url),
   title: {
-    default: `${BUSINESS.name} — ${BUSINESS.tagline}`,
+    default: `${BUSINESS.name}. ${BUSINESS.tagline}`,
     template: `%s | ${BUSINESS.name}`,
   },
   description: BUSINESS.description,
@@ -51,14 +33,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: BUSINESS.name,
-    title: `${BUSINESS.name} — ${BUSINESS.tagline}`,
+    title: `${BUSINESS.name}. ${BUSINESS.tagline}`,
     description: BUSINESS.description,
     url: BUSINESS.url,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${BUSINESS.name} — ${BUSINESS.tagline}`,
+    title: `${BUSINESS.name}. ${BUSINESS.tagline}`,
     description: BUSINESS.description,
   },
   robots: {
@@ -71,10 +53,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${archivo.variable} ${dmSans.variable}`}
-    >
+    <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&f[]=satoshi@400,500,700&display=swap"
+        />
+      </head>
       <body className="bg-background text-foreground antialiased">
         <WebApplicationSchema />
         <FloatingNav />

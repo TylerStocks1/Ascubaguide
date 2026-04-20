@@ -7,7 +7,7 @@ import { BUSINESS } from "@/lib/business";
  */
 
 export const runtime = "edge";
-export const alt = `${BUSINESS.name} — ${BUSINESS.tagline}`;
+export const alt = `${BUSINESS.name}. ${BUSINESS.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
