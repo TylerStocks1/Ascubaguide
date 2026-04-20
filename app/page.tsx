@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode, SVGProps } from "react";
 import Link from "next/link";
-import { BUSINESS, OWNER } from "@/lib/business";
-import { DIVE_SITE_COUNT } from "@/lib/dive-sites";
-import { FISH_COUNT } from "@/lib/fish";
+import { BUSINESS } from "@/lib/business";
 import { HeroScrollVideo } from "@/components/marketing/HeroScrollVideo";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 
@@ -27,12 +25,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-/** Ocean palette — layered blues instead of a single accent colour.
- *  - DEEP      : near-black navy, body bg
- *  - MID       : mid-ocean, section bg
- *  - CYAN      : caribbean shallows, primary glyph tint
- *  - SURFACE   : near-white shimmer, highlights */
-const DEEP = "#031018";
+/** Ocean palette. MID is the page bg; CYAN + LAGOON drive accents. */
 const MID = "#04131c";
 const CYAN = "#7fdbff";
 const LAGOON = "#38bdf8";
@@ -433,16 +426,3 @@ function ArrowRightIcon({ className }: { className?: string }) {
   );
 }
 
-function CheckIcon({
-  className,
-  style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <IconBase className={className} style={style} strokeWidth={2.5}>
-      <path d="M20 6 9 17l-5-5" />
-    </IconBase>
-  );
-}
