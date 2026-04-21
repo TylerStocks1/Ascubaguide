@@ -1,0 +1,17 @@
+# Cloudflare Pages redirects.
+# https://developers.cloudflare.com/pages/configuration/redirects/
+#
+# The PWA at /app-preview/ is a directory with its own index.html.
+# Visiting ascubaguide.com/app-preview (no trailing slash) was 404ing
+# because Pages doesn't auto-fall-through to a directory index when
+# the path is excluded from Functions via _routes.json.
+#
+# CF Pages applies redirect rules AFTER the static file handler, so
+# real assets (/app-preview/assets/*.js, *.css, images) hit the file
+# directly and never touch these rules. Only routes without a matching
+# file reach the rewrites below.
+#
+# 1. Bare path -> serve the PWA index (no redirect, cleaner URL).
+# 2. Any deep link the PWA's client router owns -> same index.html.
+/app-preview           /app-preview/index.html  200
+/app-preview/*         /app-preview/index.html  200
