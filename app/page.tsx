@@ -32,7 +32,7 @@ const LAGOON = "#38bdf8";
 
 export default function HomePage() {
   return (
-    <main className="relative text-white" style={{ backgroundColor: MID }}>
+    <main className="relative overflow-x-clip text-white" style={{ backgroundColor: MID }}>
       {/* Ambient ocean glow — slow radial gradients behind everything */}
       <AmbientOcean />
 

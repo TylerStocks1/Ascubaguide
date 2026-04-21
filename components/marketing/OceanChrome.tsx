@@ -13,7 +13,7 @@ const LAGOON = "#38bdf8";
 
 export function OceanMain({ children }: { children: ReactNode }) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#04131c] text-white">
+    <main className="relative min-h-screen overflow-x-clip bg-[#04131c] text-white">
       <AmbientOceanBg />
       <div className="relative z-10">{children}</div>
     </main>
