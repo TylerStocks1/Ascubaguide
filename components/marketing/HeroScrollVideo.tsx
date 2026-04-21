@@ -181,7 +181,7 @@ export function HeroScrollVideo() {
             />
           </a>
           <a
-            href="/app"
+            href="/app-preview"
             className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/85 no-underline transition hover:border-white/30 hover:text-white"
           >
             Try the app →

@@ -13,8 +13,8 @@ import { BUSINESS } from "@/lib/business";
  * is locked while open.
  */
 
-const LINKS: { label: string; href: string }[] = [
-  { label: "Try the app", href: "/app" },
+const LINKS: { label: string; href: string; external?: boolean }[] = [
+  { label: "Try the app", href: "/app-preview", external: true },
   { label: "For schools", href: "/for-dive-schools" },
   { label: "For divers", href: "/for-divers" },
   { label: "About", href: "/about" },
@@ -56,16 +56,27 @@ export function FloatingNav() {
           </Link>
 
           <ul className="hidden items-center gap-6 md:flex">
-            {LINKS.slice(0, 4).map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="whitespace-nowrap no-underline transition hover:text-white/60"
-                >
-                  {l.label}
-                </Link>
-              </li>
-            ))}
+            {LINKS.slice(0, 4).map((l) =>
+              l.external ? (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    className="whitespace-nowrap no-underline transition hover:text-white/60"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ) : (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="whitespace-nowrap no-underline transition hover:text-white/60"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              )
+            )}
           </ul>
 
           <div className="flex items-center gap-2">
@@ -127,14 +138,9 @@ export function FloatingNav() {
           }`}
         >
           <ul className="flex flex-col divide-y divide-white/10">
-            {LINKS.map((l, i) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="group flex items-center justify-between py-5 no-underline"
-                  style={{ transitionDelay: open ? `${i * 40}ms` : "0ms" }}
-                >
+            {LINKS.map((l, i) => {
+              const inner = (
+                <>
                   <span className="font-display text-2xl font-black uppercase tracking-tight text-white">
                     {l.label}
                   </span>
@@ -144,9 +150,34 @@ export function FloatingNav() {
                   >
                     →
                   </span>
-                </Link>
-              </li>
-            ))}
+                </>
+              );
+              const cls = "group flex items-center justify-between py-5 no-underline";
+              const style = { transitionDelay: open ? `${i * 40}ms` : "0ms" };
+              return l.external ? (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={cls}
+                    style={style}
+                  >
+                    {inner}
+                  </a>
+                </li>
+              ) : (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={cls}
+                    style={style}
+                  >
+                    {inner}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <Link
             href="/download"

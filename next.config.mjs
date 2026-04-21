@@ -1,17 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Make /koh-tao (no trailing slash) resolve to the static PWA index.
-  // The PWA itself lives in public/koh-tao/ and is served by Next's static
-  // file handler. See public/koh-tao/README.md for the deploy pipeline.
+  // The A Scuba Guide PWA (Vite/React, lives in G:\Websites\Fish app) is
+  // built separately and its dist/ output is copied into public/app-preview/.
+  // Next's static file handler then serves it at /app-preview/...  Two
+  // rewrites are needed:
   //
-  // When the real Vite PWA bundle is copied in, this rewrite block will
-  // need a catch-all entry as well so direct-loads of deep routes
-  // (/koh-tao/dive-sites/chumphon-pinnacle) fall back to index.html for
-  // the PWA's client router. That lands during PWA integration.
+  //   1. /app-preview (no trailing slash) → the PWA entrypoint
+  //   2. /app-preview/anything-not-a-file → same entrypoint, so that the
+  //      PWA's client-side router can handle deep links on reload.
+  //
+  // We match anything under /app-preview/ that doesn't look like a static
+  // asset (no dot in the path) and fall back to index.html.
   async rewrites() {
-    return [
-      { source: "/koh-tao", destination: "/koh-tao/index.html" },
-    ];
+    return {
+      beforeFiles: [
+        { source: "/app-preview", destination: "/app-preview/index.html" },
+      ],
+      afterFiles: [
+        {
+          source: "/app-preview/:path((?!.*\\.).+)",
+          destination: "/app-preview/index.html",
+        },
+      ],
+      fallback: [],
+    };
   },
 };
 
