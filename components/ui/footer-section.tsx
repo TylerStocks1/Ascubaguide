@@ -43,8 +43,9 @@ const footerLinks: FooterSection[] = [
     links: [
       { title: "For dive schools", href: "/for-dive-schools" },
       { title: "For divers", href: "/for-divers" },
-      { title: "Try the app", href: "/app" },
+      { title: "Try the app", href: "/app-preview" },
       { title: "Download app", href: "/download" },
+      { title: "Changelog", href: "/changelog" },
     ],
   },
   {
