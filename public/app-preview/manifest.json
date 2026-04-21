@@ -1,0 +1,25 @@
+{
+  "name": "A Scuba Guide",
+  "short_name": "Scuba Guide",
+  "description": "Dive briefing tool for Koh Tao: every dive site, every species, in your pocket.",
+  "start_url": "/app-preview/",
+  "scope": "/app-preview/",
+  "display": "standalone",
+  "background_color": "#04131c",
+  "theme_color": "#0284c7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/app-preview/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-preview/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
