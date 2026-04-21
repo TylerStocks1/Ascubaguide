@@ -60,7 +60,7 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&f[]=satoshi@400,500,700&display=swap"
         />
       </head>
-      <body className="bg-background text-foreground antialiased">
+      <body className="overflow-x-clip bg-background text-foreground antialiased">
         <WebApplicationSchema />
         <FloatingNav />
         {children}
