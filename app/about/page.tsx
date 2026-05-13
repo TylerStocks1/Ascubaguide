@@ -43,12 +43,18 @@ export default function AboutPage() {
           day teaching students.
         </p>
 
-        <div
-          aria-hidden
-          className="glass mt-12 flex h-80 items-center justify-center rounded-3xl text-sm uppercase tracking-[0.2em] text-white/40"
-        >
-          Headshot of {OWNER.firstName}. Pending (BLOCKERS.md)
-        </div>
+        <figure className="relative mt-12 overflow-hidden rounded-3xl border border-white/10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/blizz.webp"
+            alt={`${OWNER.name}, ${OWNER.jobTitle}, photographed on Koh Tao.`}
+            className="block h-auto w-full"
+            loading="lazy"
+          />
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#04131c] via-[#04131c]/70 to-transparent px-6 py-5 text-[11px] uppercase tracking-[0.3em] text-white/70">
+            {OWNER.firstName} · {OWNER.location}
+          </figcaption>
+        </figure>
 
         <section className="mt-20 space-y-6">
           <SectionHeading>The dive count, honest version.</SectionHeading>
